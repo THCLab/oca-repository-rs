@@ -1,0 +1,10 @@
+application:
+  host: 0.0.0.0
+  port: 8000
+
+database:
+  path: "db"
+
+search_engine:
+  url: "http://127.0.0.1:7700"
+  api_key: "MASTER_KEY"
