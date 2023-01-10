@@ -6,5 +6,5 @@ database:
   path: "db"
 
 search_engine:
-  url: "http://127.0.0.1:7700"
+  url: "http://search_engine:7700"
   api_key: "MASTER_KEY"

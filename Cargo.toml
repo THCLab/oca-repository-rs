@@ -6,6 +6,10 @@ license = "EUPL-1.2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+path = "src/main.rs"
+name = "oca-repository"
+
 [dependencies]
 actix-web = "4.2.1"
 config = "0.13.2"

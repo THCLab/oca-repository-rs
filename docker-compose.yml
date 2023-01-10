@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  oca_repository:
+    container_name: oca_repository
+    build: .
+    ports:
+      - 8000:8000
+    volumes:
+      - ./config/config.yml:/app/config/config.yml
+      - data-storage:/app/db
+    networks:
+      - backend
+
+  search_engine:
+    image: getmeili/meilisearch:v0.30
+    ports:
+      - 7700:7700
+    environment:
+      - MEILI_MASTER_KEY=MASTER_KEY
+    volumes:
+      - search-engine-data:/meili_data
+    networks:
+      - backend
+
+volumes:
+  data-storage:
+  search-engine-data:
+
+networks:
+  backend:
