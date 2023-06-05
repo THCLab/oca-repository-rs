@@ -1,17 +1,19 @@
+use said::version::Encode;
+use std::collections::HashMap;
+use rand::RngCore;
 use crate::data_storage::DataStorage;
 use crate::ledger::Ledger;
-use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
+use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse, HttpMessage};
 use oca_rust::state::oca::{overlay, OCA};
 use serde::{Deserialize, Serialize};
 
 use keri::keys::{PrivateKey, PublicKey};
 use rand::rngs::OsRng;
+use base64::{Engine as _, engine::{self, general_purpose}, alphabet};
 
 use meilisearch_sdk::client::*;
 
-fn generate_key_pair() -> ed25519_dalek::Keypair {
-    ed25519_dalek::Keypair::generate(&mut OsRng {})
-}
+use std::hash::Hash;
 
 #[derive(Deserialize)]
 pub struct SearchBundleQuery {
@@ -41,24 +43,147 @@ pub async fn add_namespace(
     db: web::Data<Box<dyn DataStorage>>,
     item: web::Json<serde_json::Value>,
 ) -> HttpResponse {
-    let namespace_value = item.get("namespace").unwrap();
+    let mut errors: Vec<String> = vec![];
+    let mut result: HashMap<&str, serde_json::Value> = HashMap::new();
 
-    if let serde_json::Value::String(namespace) = namespace_value {
-        let keypair = generate_key_pair();
-
-        db.insert(
-            &format!("namespace.{namespace}.public_key"),
-            keypair.public.as_bytes(),
-        )
-        .unwrap();
-        db.insert(
-            &format!("namespace.{namespace}.secret_key"),
-            keypair.secret.as_bytes(),
-        )
-        .unwrap();
+    if item.get("namespace").is_none() {
+        errors.push("Namespace is required".to_string());
     }
 
-    HttpResponse::Ok().finish()
+    if let Some(serde_json::Value::String(namespace)) = item.get("namespace") {
+        if db.get(&format!("namespace.{namespace}.public_key")).unwrap().is_some() {
+            errors.push(format!("Namespace {namespace} already exists"));
+        }
+
+        if errors.is_empty() {
+            let mut seed = [0u8; 32];
+            OsRng.fill_bytes(&mut seed);
+
+            let secret_key = ed25519_dalek::SecretKey::from_bytes(&seed).unwrap();
+            let public_key = ed25519_dalek::PublicKey::from(&secret_key);
+
+            db.insert(
+                &format!("namespace.{namespace}.public_key"),
+                public_key.as_bytes(),
+            )
+            .unwrap();
+
+            const CUSTOM_ENGINE: engine::GeneralPurpose =
+                engine::GeneralPurpose::new(&alphabet::URL_SAFE, general_purpose::NO_PAD);
+            let seed_b64 = CUSTOM_ENGINE.encode(seed);
+
+            result.insert("token", serde_json::Value::String(seed_b64));
+        }
+    }
+
+    if errors.is_empty() {
+        result.insert("success", serde_json::Value::Bool(true));
+    } else {
+        result.insert("success", serde_json::Value::Bool(false));
+        result.insert("errors", serde_json::Value::Array(errors.iter().map(|e| serde_json::Value::String(e.to_string())).collect()));
+    }
+
+    HttpResponse::Ok()
+        .content_type(ContentType::json())
+        .body(serde_json::to_string(&result).unwrap())
+}
+
+pub async fn get_namespace(
+    db: web::Data<Box<dyn DataStorage>>,
+    req: HttpRequest,
+) -> HttpResponse {
+    let mut result: HashMap<&str, serde_json::Value> = HashMap::new();
+    let namespace = req.match_info().get("namespace").unwrap();
+    let token = req.extensions().get::<String>().unwrap().clone();
+    println!("req: {req:?}");
+    println!("token: {}", token);
+
+    let public_key = db
+        .get(&format!("namespace.{namespace}.public_key"))
+        .unwrap()
+        .unwrap();
+
+    const CUSTOM_ENGINE: engine::GeneralPurpose =
+        engine::GeneralPurpose::new(&alphabet::URL_SAFE, general_purpose::NO_PAD);
+
+    let seed = CUSTOM_ENGINE.decode(token).unwrap();
+
+    /*
+    let mut ed25519_seed = [0u8; 32];
+    OsRng.fill_bytes(&mut ed25519_seed);
+
+    println!("b64: {b64_url}");
+    println!("ed25519_seed: {:?}", String::from_utf8_lossy(&ed25519_seed));
+
+    let seed_str = "AOs8-zNPPh0EhavdrCfCiTk9nGeO8e6VxUCzwdKXJAd0";
+    println!("{:?}", CUSTOM_ENGINE.decode(seed_str).unwrap());
+
+    let sec_key = ed25519_dalek::SecretKey::from_bytes(&ed25519_seed).unwrap();
+    let pub_key = ed25519_dalek::PublicKey::from(&sec_key);
+    println!("sk: {sec_key:?} = pub_key: {pub_key:?}");
+
+    let seed: SeedPrefix = seed_str.parse().unwrap();
+    let (pub_key, priv_key) = seed.derive_key_pair().unwrap();
+    println!("pk: {pk:?} = pub_key: {pub_key:?}");
+    println!("sk: {:?} = sec_key: {priv_key:?}", String::from_utf8_lossy(&sk));
+
+    println!(
+        "get_namespace: {}, params: {}",
+        namespace,
+        req.query_string(),
+    );
+    */
+    HttpResponse::Ok()
+        .content_type(ContentType::json())
+        .body(serde_json::to_string(&result).unwrap())
+}
+
+pub async fn add_oca_file(
+    db: web::Data<Box<dyn DataStorage>>,
+    item: web::Bytes,
+    req: HttpRequest,
+) -> HttpResponse {
+    let oca_ast = oca_file::ocafile::parse_from_string(
+        String::from_utf8(item.to_vec()).unwrap()
+    );
+
+    let mut base: Option<oca_bundle::state::oca::OCABox> = None;
+    // let mut oca: oca_bundle::state::oca::OCABox = oca_bundle::state::oca::OCABox::new();
+    let mut oca_bytes: Vec<u8> = vec![];
+    for command in oca_ast.commands {
+        let mut oca_box = oca_dag::build::apply_command(base, command);
+        oca_bytes = oca_box.generate_bundle().encode().unwrap();
+        base = Some(oca_box);
+    }
+    let oca_bundle = serde_json::from_str::<oca_bundle::state::oca::OCABundle>(&String::from_utf8(oca_bytes.clone()).unwrap()).unwrap();
+    let oca_said = oca_bundle.said.unwrap();
+    db.insert(
+        &format!("oca.{}", oca_said),
+        &oca_bytes
+    );
+
+    let r = db.get(&format!("oca.{}", oca_said)).unwrap();
+    let result = serde_json::json!({
+        "success": true,
+        "said": oca_said,
+    });
+
+    HttpResponse::Ok()
+        .content_type(ContentType::json())
+        .body(serde_json::to_string(&result).unwrap())
+}
+
+pub async fn get_oca_bundle(
+  db: web::Data<Box<dyn DataStorage>>,
+  req: HttpRequest,
+) -> HttpResponse {
+    let said = req.match_info().get("said").unwrap();
+    let r = db.get(&format!("oca.{}", said)).unwrap();
+    let oca_bundle_str = String::from_utf8(r.unwrap()).unwrap();
+
+    HttpResponse::Ok()
+        .content_type(ContentType::json())
+        .body(oca_bundle_str)
 }
 
 pub async fn add_bundle(
@@ -68,16 +193,34 @@ pub async fn add_bundle(
     req: HttpRequest,
 ) -> HttpResponse {
     let namespace = req.match_info().get("namespace").unwrap();
+    let token = req.extensions().get::<String>().unwrap().clone();
 
-    let pk = db
+    const CUSTOM_ENGINE: engine::GeneralPurpose =
+        engine::GeneralPurpose::new(&alphabet::URL_SAFE, general_purpose::NO_PAD);
+    let seed = CUSTOM_ENGINE.decode(token).unwrap();
+    let secret_key = ed25519_dalek::SecretKey::from_bytes(&seed).unwrap();
+    let public_key = ed25519_dalek::PublicKey::from(&secret_key);
+
+    let stored_public_key = db
         .get(&format!("namespace.{namespace}.public_key"))
         .unwrap()
         .unwrap();
-    let sk = db
-        .get(&format!("namespace.{namespace}.secret_key"))
-        .unwrap()
-        .unwrap();
 
+    /*
+    if public_key.as_bytes().to_vec() == stored_public_key {
+        let bundle_digests = versioning::bundle::to_digests(&item);
+
+        println!("bundle_digests: {bundle_digests:?}");
+        println!("bundle_digests: {:?}", String::from_utf8_lossy(&bundle_digests));
+        db.insert(
+            &format!("namespace.{namespace}.bundle"),
+            bundle_digests.as_slice(),
+        )
+        .unwrap();
+    }
+    */
+
+    /*
     let public_key = PublicKey::new(pk);
     let private_key = PrivateKey::new(sk);
 
@@ -116,7 +259,7 @@ pub async fn add_bundle(
             .unwrap();
     }
 
-    ledger.add_block(payload.as_str(), private_key).unwrap();
+    ledger.add_block(payload.as_str(), secret_key).unwrap();
 
     db.insert(
         &format!("namespace.{namespace}.{}", item.capture_base.said),
@@ -125,6 +268,7 @@ pub async fn add_bundle(
     .unwrap();
 
     println!("{:?}", ledger.to_string().unwrap());
+    */
 
     HttpResponse::Ok().finish()
 }
