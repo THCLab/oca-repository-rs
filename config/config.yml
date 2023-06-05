@@ -6,5 +6,6 @@ database:
   path: "db"
 
 search_engine:
-  url: "http://search_engine:7700"
+  # url: "http://search_engine:7700"
+  url: "http://localhost:7700"
   api_key: "MASTER_KEY"

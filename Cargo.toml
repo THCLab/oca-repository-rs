@@ -23,8 +23,23 @@ sled = "0.34.7"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
 ed25519-dalek = "1.0.1"
+base64 = "0.21.0"
 rand = { version = "0.7.3", features = ["std", "getrandom"]}
 dyn-clonable = "0.9.0"
 oca-rust = "0.2.21"
+# oca-rs = { path = "./../../rust/oca-rs/" }
+oca-ast = { git = "https://github.com/olichwiruk/oca-rs", branch = "work" }
+oca-file = { git = "https://github.com/olichwiruk/oca-rs", branch = "work" }
+oca-dag = { git = "https://github.com/olichwiruk/oca-rs", branch = "work" }
+oca-bundle = { git = "https://github.com/olichwiruk/oca-rs", branch = "work" }
+# oca-ast = { path = "./../oca-rs/oca-ast" }
+# oca-file = { path = "./../oca-rs/oca-file" }
+# oca-dag = { path = "./../oca-rs/oca-dag" }
+# oca-bundle = { path = "./../oca-rs/oca-bundle" }
+said = { git = "https://github.com/THCLab/cesrox", branch = "macros", features = ["macros"] }
+# said = { path = "./../cesrox/said", features = ["macros"] }
 meilisearch-sdk = "0.21.2"
 uuid = "1.2.2"
+actix-web-httpauth = "0.8.0"
+# ocaast = { path = "../../ocafile/ocaast" }
+indexmap = { version = "1.9.3", features = ["serde"]}

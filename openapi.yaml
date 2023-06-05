@@ -290,6 +290,45 @@ paths:
                 items:
                   type: object
 
+  /oca-bundle:
+    post:
+      summary: Creates an OCA Bundle from OCAfile
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: OCA Bundle created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    said:
+                      type: string
+
+  /oca-bundle/{said}:
+    get:
+      summary: Get OCA Bundle
+      parameters:
+        - name: said
+          in: path
+          required: true
+          description: OCA Bundle SAID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+        '404':
+          description: Bundle not found
+
 components:
   securitySchemes:
     namespaceToken:
