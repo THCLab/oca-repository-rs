@@ -1,7 +1,7 @@
 use said::version::Encode;
 use std::collections::HashMap;
 use rand::RngCore;
-use crate::data_storage::DataStorage;
+use oca_dag::data_storage::DataStorage;
 use crate::ledger::Ledger;
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse, HttpMessage};
 use oca_rust::state::oca::{overlay, OCA};
@@ -147,26 +147,22 @@ pub async fn add_oca_file(
         String::from_utf8(item.to_vec()).unwrap()
     );
 
-    let mut base: Option<oca_bundle::state::oca::OCABox> = None;
-    // let mut oca: oca_bundle::state::oca::OCABox = oca_bundle::state::oca::OCABox::new();
-    let mut oca_bytes: Vec<u8> = vec![];
-    for command in oca_ast.commands {
-        let mut oca_box = oca_dag::build::apply_command(base, command);
-        oca_bytes = oca_box.generate_bundle().encode().unwrap();
-        base = Some(oca_box);
-    }
-    let oca_bundle = serde_json::from_str::<oca_bundle::state::oca::OCABundle>(&String::from_utf8(oca_bytes.clone()).unwrap()).unwrap();
-    let oca_said = oca_bundle.said.unwrap();
-    db.insert(
-        &format!("oca.{}", oca_said),
-        &oca_bytes
-    );
+    let oca_build = oca_dag::versioning::ocafile::build_oca(db.get_ref().clone(), oca_ast.commands);
 
-    let r = db.get(&format!("oca.{}", oca_said)).unwrap();
-    let result = serde_json::json!({
-        "success": true,
-        "said": oca_said,
-    });
+    let result = match oca_build {
+        Ok(oca_bundle) => {
+            serde_json::json!({
+                "success": true,
+                "said": oca_bundle.said.unwrap(),
+            })
+        }
+        Err(e) => {
+            serde_json::json!({
+                "success": false,
+                "error": e,
+            })
+        }
+    };
 
     HttpResponse::Ok()
         .content_type(ContentType::json())
