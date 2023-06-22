@@ -169,6 +169,40 @@ pub async fn add_oca_file(
         .body(serde_json::to_string(&result).unwrap())
 }
 
+pub async fn get_oca_file_history(
+    db: web::Data<Box<dyn DataStorage>>,
+    req: HttpRequest,
+) -> HttpResponse {
+    let mut said = req.match_info().get("said").unwrap().to_string();
+    fn extract_operation(db: &Box<dyn DataStorage>, said: &String) -> (String, String) {
+        let r = db.get(&format!("oca.{}.operation", said)).unwrap().unwrap();
+
+        let said_length = r.first().unwrap();
+        let parent_said = String::from_utf8_lossy(&r[1..*said_length as usize + 1]).to_string();
+        let op_length = r[*said_length as usize + 1];
+        let op = String::from_utf8_lossy(&r[*said_length as usize + 2..*said_length as usize + 2 + op_length as usize]).to_string();
+
+        (parent_said, op)
+    }
+
+    let mut history: Vec<String> = vec![];
+
+    loop {
+        let (parent_said, op) = extract_operation(&db, &said);
+        said = parent_said.clone();
+        history.push(format!("{{ \"from\": \"{}\", \"operation\": {} }}", said, op));
+
+        if said.is_empty() {
+            break;
+        }
+    };
+    history.reverse();
+
+    HttpResponse::Ok()
+        .content_type(ContentType::json())
+        .body(format!("[{}]", history.join(",")))
+}
+
 pub async fn get_oca_bundle(
   db: web::Data<Box<dyn DataStorage>>,
   req: HttpRequest,

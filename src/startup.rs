@@ -51,6 +51,7 @@ pub fn run(
             )
             .route("/oca-bundle", web::post().to(namespaces::add_oca_file))
             .route("/oca-bundle/{said}", web::get().to(namespaces::get_oca_bundle))
+            .route("/oca-bundle/{said}/steps", web::get().to(namespaces::get_oca_file_history))
             .route("/search", web::get().to(namespaces::search_bundle))
     })
     .listen(listener)?

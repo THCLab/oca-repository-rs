@@ -329,6 +329,22 @@ paths:
         '404':
           description: Bundle not found
 
+  /oca-bundle/{said}/steps:
+    get:
+      summary: List OCAFile steps to get OCA Bundle
+      parameters:
+        - name: said
+          in: path
+          required: true
+          description: OCA Bundle SAID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+        '404':
+          description: Bundle not found
+
 components:
   securitySchemes:
     namespaceToken:
