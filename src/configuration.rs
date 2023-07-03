@@ -24,7 +24,7 @@ pub struct SearchEngineSettings {
 
 pub fn get_configuration() -> Result<Settings, config::ConfigError> {
     let settings = config::Config::builder()
-        .add_source(config::File::from(std::path::Path::new("/tmp/config.yml")))
+        .add_source(config::File::with_name("config/config"))
         .build()?;
     settings.try_deserialize()
 }

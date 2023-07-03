@@ -7,7 +7,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./config/config.yml:/tmp/config.yml
+      - ./config/config.yml:/app/config/config.yml
       - data-storage:/app/db
     networks:
       - backend
