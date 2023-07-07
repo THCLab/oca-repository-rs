@@ -2,7 +2,20 @@
 
 ## Usage
 
-...
+1. Pull the Docker image for OCA Repository
+```
+docker pull humancolossus/oca-repository-rs:latest
+```
+Change `latest` to a [ SemVer ](https://semver.org/)-based tag for production deployment.
+2. Run an instance of OCA Repository
+```
+docker run
+    -p 8000:8000
+    -v $PWD/config/config.yml:/app/config/config.yml:ro
+    humancolossus/oca-repository-rs:latest
+```
+3. See the `openapi.yml` spec under the `OCA Repository` tag for all available endpoints.
+
 
 ## Core components
 
