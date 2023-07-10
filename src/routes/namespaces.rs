@@ -1,19 +1,15 @@
-use said::version::Encode;
 use std::collections::HashMap;
 use rand::RngCore;
 use oca_dag::data_storage::DataStorage;
-use crate::ledger::Ledger;
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse, HttpMessage};
-use oca_rust::state::oca::{overlay, OCA};
+use oca_rust::state::oca::OCA;
 use serde::{Deserialize, Serialize};
 
-use keri::keys::{PrivateKey, PublicKey};
 use rand::rngs::OsRng;
 use base64::{Engine as _, engine::{self, general_purpose}, alphabet};
 
 use meilisearch_sdk::client::*;
 
-use std::hash::Hash;
 
 #[derive(Deserialize)]
 pub struct SearchBundleQuery {
@@ -29,7 +25,7 @@ struct OCASearchIndex {
 }
 
 impl OCASearchIndex {
-    fn new(capture_base_said: String, name: String, description: String) -> Self {
+    fn _new(capture_base_said: String, name: String, description: String) -> Self {
         Self {
             uuid: uuid::Uuid::new_v4().to_string(),
             capture_base_said,
@@ -92,13 +88,13 @@ pub async fn get_namespace(
     db: web::Data<Box<dyn DataStorage>>,
     req: HttpRequest,
 ) -> HttpResponse {
-    let mut result: HashMap<&str, serde_json::Value> = HashMap::new();
+    let result: HashMap<&str, serde_json::Value> = HashMap::new();
     let namespace = req.match_info().get("namespace").unwrap();
     let token = req.extensions().get::<String>().unwrap().clone();
     println!("req: {req:?}");
     println!("token: {}", token);
 
-    let public_key = db
+    let _public_key = db
         .get(&format!("namespace.{namespace}.public_key"))
         .unwrap()
         .unwrap();
@@ -106,7 +102,7 @@ pub async fn get_namespace(
     const CUSTOM_ENGINE: engine::GeneralPurpose =
         engine::GeneralPurpose::new(&alphabet::URL_SAFE, general_purpose::NO_PAD);
 
-    let seed = CUSTOM_ENGINE.decode(token).unwrap();
+    let _seed = CUSTOM_ENGINE.decode(token).unwrap();
 
     /*
     let mut ed25519_seed = [0u8; 32];
@@ -141,7 +137,7 @@ pub async fn get_namespace(
 pub async fn add_oca_file(
     db: web::Data<Box<dyn DataStorage>>,
     item: web::Bytes,
-    req: HttpRequest,
+    _req: HttpRequest,
 ) -> HttpResponse {
     let oca_ast = oca_file::ocafile::parse_from_string(
         String::from_utf8(item.to_vec()).unwrap()
@@ -174,6 +170,7 @@ pub async fn get_oca_file_history(
     req: HttpRequest,
 ) -> HttpResponse {
     let mut said = req.match_info().get("said").unwrap().to_string();
+    #[allow(clippy::borrowed_box)]
     fn extract_operation(db: &Box<dyn DataStorage>, said: &String) -> (String, String) {
         let r = db.get(&format!("oca.{}.operation", said)).unwrap().unwrap();
 
@@ -218,8 +215,8 @@ pub async fn get_oca_bundle(
 
 pub async fn add_bundle(
     db: web::Data<Box<dyn DataStorage>>,
-    search_engine_client: web::Data<Box<Client>>,
-    item: web::Json<OCA>,
+    _search_engine_client: web::Data<Box<Client>>,
+    _item: web::Json<OCA>,
     req: HttpRequest,
 ) -> HttpResponse {
     let namespace = req.match_info().get("namespace").unwrap();
@@ -229,9 +226,9 @@ pub async fn add_bundle(
         engine::GeneralPurpose::new(&alphabet::URL_SAFE, general_purpose::NO_PAD);
     let seed = CUSTOM_ENGINE.decode(token).unwrap();
     let secret_key = ed25519_dalek::SecretKey::from_bytes(&seed).unwrap();
-    let public_key = ed25519_dalek::PublicKey::from(&secret_key);
+    let _public_key = ed25519_dalek::PublicKey::from(&secret_key);
 
-    let stored_public_key = db
+    let _stored_public_key = db
         .get(&format!("namespace.{namespace}.public_key"))
         .unwrap()
         .unwrap();

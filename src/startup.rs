@@ -1,4 +1,3 @@
-use actix_web::HttpResponse;
 use oca_dag::data_storage::DataStorage;
 use crate::routes::health_check;
 use crate::routes::namespaces;
@@ -6,7 +5,7 @@ use std::sync::Arc;
 
 use actix_web::dev::Server;
 use actix_web::{dev::ServiceRequest, Error, web, App, HttpServer, HttpMessage};
-use actix_web_httpauth::{extractors::{bearer::{BearerAuth, Config}, AuthenticationError}, middleware::HttpAuthentication};
+use actix_web_httpauth::{extractors::{bearer::{BearerAuth}}, middleware::HttpAuthentication};
 use std::net::TcpListener;
 
 use meilisearch_sdk::client::*;
