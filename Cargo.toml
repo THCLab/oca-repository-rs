@@ -27,11 +27,11 @@ base64 = "0.21.0"
 rand = { version = "0.7.3", features = ["std", "getrandom"]}
 dyn-clonable = "0.9.0"
 oca-rust = "0.2.21"
-oca-ast = { git = "https://github.com/THCLab/oca-rs", branch = "v0.3" }
-oca-file = { git = "https://github.com/THCLab/oca-rs", branch = "v0.3" }
-oca-dag = { git = "https://github.com/THCLab/oca-rs", branch = "v0.3" }
-oca-bundle = { git = "https://github.com/THCLab/oca-rs", branch = "v0.3" }
-said = { git = "https://github.com/THCLab/cesrox", branch = "macros", features = ["macros"] }
+oca-ast = "0.1.0"
+oca-file = "0.1.1"
+oca-dag = { git = "https://github.com/THCLab/oca-rs" }
+oca-bundle = { version = "0.3.0-rc.3", features = ["format_overlay"] }
+said = { version = "0.3.0", features = ["macros"] }
 meilisearch-sdk = "0.21.2"
 uuid = "1.2.2"
 actix-web-httpauth = "0.8.0"
