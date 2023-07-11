@@ -1,6 +1,6 @@
 openapi: 3.0.2
 info:
-  title: Semantic Engine
+  title: OCA Repository
   description: ''
   version: 0.4.0
 servers:
