@@ -15,7 +15,7 @@ docker run
     --rm
     -p 8000:8000
     -v $PWD/config/config.yml:/app/config/config.yml:ro
-    humancolossus/oca-repository-rs:latest
+    humancolossus/oca-repository:latest
 ```
 
 3. See the [`openapi.yml`](https://github.com/THCLab/oca-repository-rs/blob/main/openapi.yml) spec under the `OCA Repository` tag for all available endpoints.
