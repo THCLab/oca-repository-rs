@@ -1991,9 +1991,9 @@ dependencies = [
 
 [[package]]
 name = "oca-ast"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45c3b12351f2a89fdface952617c1e0e0c8762739bca43c13479154f44188e0d"
+checksum = "f001a9dd2fdaa678601deea0179cae17964f1197dc212ca138be2e7c3457a071"
 dependencies = [
  "env_logger",
  "indexmap",
@@ -2003,13 +2003,14 @@ dependencies = [
  "strum",
  "strum_macros",
  "thiserror",
+ "wasm-bindgen",
 ]
 
 [[package]]
 name = "oca-bundle"
-version = "0.3.0-rc.3"
+version = "0.3.0-rc.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7648677ddfc459ef5393e031ec5272ed40151c07ce97dc1a1676cc6cdd285227"
+checksum = "ae6fe8f4c9f18b1a60284117fdfa5077041c7799ff4f72d797a743093dacd43a"
 dependencies = [
  "cascade",
  "dyn-clonable",
@@ -2048,16 +2049,15 @@ dependencies = [
 
 [[package]]
 name = "oca-file"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ede8d32262b881a6bdf66e92a9527002cca242053562cc92f3907917091d95c"
+checksum = "9c23fcd62ea8f12df0ff6129a28dca236e7bd46f8f43316c5dae99b2707c42b1"
 dependencies = [
  "clap 4.3.5",
  "env_logger",
  "indexmap",
  "log",
  "oca-ast",
- "oca-bundle",
  "pest",
  "pest_derive",
  "pretty_assertions",

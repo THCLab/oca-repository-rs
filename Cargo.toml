@@ -27,10 +27,10 @@ base64 = "0.21.0"
 rand = { version = "0.7.3", features = ["std", "getrandom"]}
 dyn-clonable = "0.9.0"
 oca-rust = "0.2.21"
-oca-ast = "0.1.0"
-oca-file = "0.1.1"
+oca-ast = "0.1.1"
+oca-file = "0.1.2"
 oca-dag = { git = "https://github.com/THCLab/oca-rs" }
-oca-bundle = { version = "0.3.0-rc.3", features = ["format_overlay"] }
+oca-bundle = { version = "0.3.0-rc.4", features = ["format_overlay"] }
 said = { version = "0.3.0", features = ["macros"] }
 meilisearch-sdk = "0.21.2"
 uuid = "1.2.2"

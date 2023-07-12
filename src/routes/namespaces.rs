@@ -1,3 +1,4 @@
+use said::version::Encode;
 use std::collections::HashMap;
 use rand::RngCore;
 use oca_dag::data_storage::DataStorage;
@@ -139,26 +140,63 @@ pub async fn add_oca_file(
     item: web::Bytes,
     _req: HttpRequest,
 ) -> HttpResponse {
+    let result;
     let oca_ast = oca_file::ocafile::parse_from_string(
         String::from_utf8(item.to_vec()).unwrap()
     );
 
-    let oca_build = oca_dag::versioning::ocafile::build_oca(db.get_ref().clone(), oca_ast.commands);
+    match oca_ast {
+        Ok(oca_ast) => {
+            let build_result = oca_bundle::build::from_ast(oca_ast);
 
-    let result = match oca_build {
-        Ok(oca_bundle) => {
-            serde_json::json!({
-                "success": true,
-                "said": oca_bundle.said.unwrap(),
-            })
+            result = match build_result {
+                Ok(oca_build) => {
+                    oca_build.steps.iter().for_each(|step| {
+                        let mut input: Vec<u8> = vec![];
+                        match &step.parent_said {
+                            Some(said) => {
+                                input.push(said.to_string().as_bytes().len().try_into().unwrap());
+                                input.extend(said.to_string().as_bytes());
+                            },
+                            None => {
+                                input.push(0);
+                            }
+                        }
+
+                        let command_str = serde_json::to_string(&step.command).unwrap();
+                        input.push(command_str.as_bytes().len().try_into().unwrap());
+                        input.extend(command_str.as_bytes());
+                        let result_bundle = step.result.clone();
+                        db.insert(
+                            &format!("oca.{}.operation", result_bundle.said.clone().unwrap()),
+                            &input,
+                        ).unwrap();
+                        db.insert(
+                            &format!("oca.{}", result_bundle.said.clone().unwrap()),
+                            &result_bundle.encode().unwrap(),
+                        ).unwrap();
+                    });
+
+                    serde_json::json!({
+                        "success": true,
+                        "said": oca_build.oca_bundle.said.unwrap(),
+                    })
+                }
+                Err(e) => {
+                    serde_json::json!({
+                        "success": false,
+                        "error": e,
+                    })
+                }
+            };
         }
         Err(e) => {
-            serde_json::json!({
+            result = serde_json::json!({
                 "success": false,
                 "error": e,
-            })
+            });
         }
-    };
+    }
 
     HttpResponse::Ok()
         .content_type(ContentType::json())
