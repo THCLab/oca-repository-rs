@@ -2,24 +2,34 @@ openapi: 3.0.2
 info:
   title: OCA Repository
   description: ''
-  version: 0.4.0
+  version: 0.4.1
 servers:
+  - url: https://repository.oca.argo.colossi.network/api/
   - url: http://localhost:8000
 tags:
-  - name: OCA Repository
+  - name: Public API
     description: Endpoints to manage the OCA Bundles
 
 
 paths:
   /oca-bundle:
     post:
-      tags: [OCA Repository]
+      tags: [Public API]
       summary: Creates an OCA Bundle from OCAfile
       requestBody:
         content:
           text/plain:
             schema:
               type: string
+            example: |
+              ADD ATTRIBUTE d=Text i=Text passed=Boolean
+              
+              ADD META en PROPS name="Entrance credential" description="Entrance credential"
+              
+              ADD CHARACTER_ENCODING ATTRS d=utf-8 i=utf-8 passed=utf-8
+              ADD CONFORMANCE ATTRS d=M i=M passed=M
+              ADD LABEL en ATTRS d="Schema digest" i="Credential Issuee" passed="Passed"
+              ADD INFORMATION en ATTRS d="Schema digest" i="Credential Issuee" passed="Enables or disables passing"
       responses:
         '200':
           description: OCA Bundle created successfully
@@ -37,7 +47,7 @@ paths:
 
   /oca-bundle/{said}:
     get:
-      tags: [OCA Repository]
+      tags: [Public API]
       summary: Get OCA Bundle
       parameters:
         - name: said
@@ -54,7 +64,7 @@ paths:
 
   /oca-bundle/{said}/steps:
     get:
-      tags: [OCA Repository]
+      tags: [Public API]
       summary: List OCAFile steps to get OCA Bundle
       parameters:
         - name: said
