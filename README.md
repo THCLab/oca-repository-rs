@@ -4,7 +4,7 @@
 
 1. Pull the Docker image for OCA Repository
 ```
-docker pull humancolossus/oca-repository-rs:latest
+docker pull humancolossus/oca-repository:latest
 ```
   Change `latest` to a [SemVer](https://semver.org/)-based tag for production deployment.
 
