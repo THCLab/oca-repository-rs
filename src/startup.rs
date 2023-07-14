@@ -1,6 +1,7 @@
 use oca_rs::data_storage::DataStorage;
 use crate::routes::health_check;
 use crate::routes::namespaces;
+use crate::routes::oca_bundles;
 use std::sync::Arc;
 
 use actix_web::dev::Server;
@@ -48,9 +49,12 @@ pub fn run(
                         web::post().to(namespaces::add_bundle),
                     )
             )
-            .route("/oca-bundle", web::post().to(namespaces::add_oca_file))
-            .route("/oca-bundle/{said}", web::get().to(namespaces::get_oca_bundle))
-            .route("/oca-bundle/{said}/steps", web::get().to(namespaces::get_oca_file_history))
+            .service(
+                web::scope("/oca-bundles")
+                    .route("", web::post().to(oca_bundles::add_oca_file))
+                    .route("/{said}", web::get().to(oca_bundles::get_oca_bundle))
+                    .route("/{said}/steps", web::get().to(oca_bundles::get_oca_file_history))
+            )
             .route("/search", web::get().to(namespaces::search_bundle))
     })
     .listen(listener)?

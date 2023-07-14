@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: OCA Repository
   description: ''
-  version: 0.4.1
+  version: 0.4.3
 servers:
   - url: https://repository.oca.argo.colossi.network/api/
   - url: http://localhost:8000
@@ -12,7 +12,7 @@ tags:
 
 
 paths:
-  /oca-bundle:
+  /oca-bundles:
     post:
       tags: [Public API]
       summary: Creates an OCA Bundle from OCAfile
@@ -45,7 +45,7 @@ paths:
                     said:
                       type: string
 
-  /oca-bundle/{said}:
+  /oca-bundles/{said}:
     get:
       tags: [Public API]
       summary: Get OCA Bundle
@@ -62,7 +62,7 @@ paths:
         '404':
           description: Bundle not found
 
-  /oca-bundle/{said}/steps:
+  /oca-bundles/{said}/steps:
     get:
       tags: [Public API]
       summary: List OCAFile steps to get OCA Bundle
