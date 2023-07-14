@@ -83,3 +83,33 @@ pub async fn get_oca_file_history(
         .content_type(ContentType::json())
         .body(serde_json::to_string(&result).unwrap())
 }
+
+pub async fn get_oca_file(
+    db: web::Data<Box<dyn DataStorage>>,
+    req: HttpRequest,
+) -> HttpResponse {
+    let said = req.match_info().get("said").unwrap().to_string();
+
+    let oca_facade = oca_rs::Facade::new(db.get_ref().clone());
+    match oca_facade.get_oca_bundle_ocafile(said) {
+        Ok(ocafile) => {
+
+            HttpResponse::Ok()
+                .content_type(ContentType::plaintext())
+                .body(ocafile)
+        },
+        Err(errors) => {
+            HttpResponse::Ok()
+                .content_type(ContentType::json())
+                .body(
+                    serde_json::to_string(
+                        &serde_json::json!({
+                            "success": false,
+                            "errors": errors,
+                        })
+                    ).unwrap()
+                )
+        }
+    }
+
+}

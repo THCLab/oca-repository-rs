@@ -2008,9 +2008,9 @@ dependencies = [
 
 [[package]]
 name = "oca-bundle"
-version = "0.3.0-rc.5"
+version = "0.3.0-rc.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a62330f23b48501d1d393f6854e47a3d9579c008e753f599ef28d4b214f69c8f"
+checksum = "53ebf212bbeb6b2b9b17047c25c7832a7e1003d6ee801cdb141b307bd639a0f2"
 dependencies = [
  "cascade",
  "dyn-clonable",
@@ -2080,10 +2080,11 @@ dependencies = [
 
 [[package]]
 name = "oca-rs"
-version = "0.3.0-rc.6"
+version = "0.3.0-rc.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "322780de2046205a3a07a4f028af2be3ccb88dbf1dd60170d07aa6ae11709de7"
+checksum = "5bf76677412749b40aca8de839e7f0098f606310d34aa0535dd1edf17647c987"
 dependencies = [
+ "convert_case 0.6.0",
  "dyn-clonable",
  "oca-ast",
  "oca-bundle",
