@@ -1991,9 +1991,9 @@ dependencies = [
 
 [[package]]
 name = "oca-ast"
-version = "0.1.1"
+version = "0.3.0-rc.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f001a9dd2fdaa678601deea0179cae17964f1197dc212ca138be2e7c3457a071"
+checksum = "9888a3983fcee4da7f3262f398840fc399254e8c69ee829fff2e38cf68775936"
 dependencies = [
  "env_logger",
  "indexmap",
@@ -2008,9 +2008,9 @@ dependencies = [
 
 [[package]]
 name = "oca-bundle"
-version = "0.3.0-rc.4"
+version = "0.3.0-rc.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae6fe8f4c9f18b1a60284117fdfa5077041c7799ff4f72d797a743093dacd43a"
+checksum = "a62330f23b48501d1d393f6854e47a3d9579c008e753f599ef28d4b214f69c8f"
 dependencies = [
  "cascade",
  "dyn-clonable",
@@ -2032,26 +2032,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "oca-dag"
-version = "0.1.0"
-source = "git+https://github.com/THCLab/oca-rs#473c7e22bedce08c0b57ceea2a754551097f4c3d"
-dependencies = [
- "dyn-clonable",
- "indexmap",
- "isolang",
- "oca-ast",
- "oca-bundle",
- "said 0.3.0",
- "serde",
- "serde_json",
- "sled",
-]
-
-[[package]]
 name = "oca-file"
-version = "0.1.2"
+version = "0.3.0-rc.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c23fcd62ea8f12df0ff6129a28dca236e7bd46f8f43316c5dae99b2707c42b1"
+checksum = "bab3349e1a9e7cb40a755b213e52275be21fd1588794c54791f6a9b071153939"
 dependencies = [
  "clap 4.3.5",
  "env_logger",
@@ -2083,19 +2067,30 @@ dependencies = [
  "keri",
  "meilisearch-sdk",
  "microledger",
- "oca-ast",
- "oca-bundle",
- "oca-dag",
- "oca-file",
+ "oca-rs",
  "oca-rust",
  "rand 0.7.3",
- "said 0.3.0",
  "serde",
  "serde-value",
  "serde_json",
  "sled",
  "tokio",
  "uuid",
+]
+
+[[package]]
+name = "oca-rs"
+version = "0.3.0-rc.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "322780de2046205a3a07a4f028af2be3ccb88dbf1dd60170d07aa6ae11709de7"
+dependencies = [
+ "dyn-clonable",
+ "oca-ast",
+ "oca-bundle",
+ "oca-file",
+ "serde",
+ "serde_json",
+ "sled",
 ]
 
 [[package]]

@@ -1,7 +1,6 @@
-use said::version::Encode;
 use std::collections::HashMap;
 use rand::RngCore;
-use oca_dag::data_storage::DataStorage;
+use oca_rs::data_storage::DataStorage;
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse, HttpMessage};
 use oca_rust::state::oca::OCA;
 use serde::{Deserialize, Serialize};
@@ -140,63 +139,23 @@ pub async fn add_oca_file(
     item: web::Bytes,
     _req: HttpRequest,
 ) -> HttpResponse {
-    let result;
-    let oca_ast = oca_file::ocafile::parse_from_string(
-        String::from_utf8(item.to_vec()).unwrap()
-    );
+    let ocafile = String::from_utf8(item.to_vec()).unwrap();
 
-    match oca_ast {
-        Ok(oca_ast) => {
-            let build_result = oca_bundle::build::from_ast(oca_ast);
-
-            result = match build_result {
-                Ok(oca_build) => {
-                    oca_build.steps.iter().for_each(|step| {
-                        let mut input: Vec<u8> = vec![];
-                        match &step.parent_said {
-                            Some(said) => {
-                                input.push(said.to_string().as_bytes().len().try_into().unwrap());
-                                input.extend(said.to_string().as_bytes());
-                            },
-                            None => {
-                                input.push(0);
-                            }
-                        }
-
-                        let command_str = serde_json::to_string(&step.command).unwrap();
-                        input.push(command_str.as_bytes().len().try_into().unwrap());
-                        input.extend(command_str.as_bytes());
-                        let result_bundle = step.result.clone();
-                        db.insert(
-                            &format!("oca.{}.operation", result_bundle.said.clone().unwrap()),
-                            &input,
-                        ).unwrap();
-                        db.insert(
-                            &format!("oca.{}", result_bundle.said.clone().unwrap()),
-                            &result_bundle.encode().unwrap(),
-                        ).unwrap();
-                    });
-
-                    serde_json::json!({
-                        "success": true,
-                        "said": oca_build.oca_bundle.said.unwrap(),
-                    })
-                }
-                Err(e) => {
-                    serde_json::json!({
-                        "success": false,
-                        "error": e,
-                    })
-                }
-            };
-        }
-        Err(e) => {
-            result = serde_json::json!({
+    let oca_facade = oca_rs::Facade::new(db.get_ref().clone());
+    let result = match oca_facade.build_from_ocafile(ocafile) {
+        Ok(oca_bundle) => {
+            serde_json::json!({
+                "success": true,
+                "said": oca_bundle.said.unwrap(),
+            })
+        },
+        Err(errors) => {
+            serde_json::json!({
                 "success": false,
-                "error": e,
-            });
+                "errors": errors,
+            })
         }
-    }
+    };
 
     HttpResponse::Ok()
         .content_type(ContentType::json())
@@ -207,48 +166,55 @@ pub async fn get_oca_file_history(
     db: web::Data<Box<dyn DataStorage>>,
     req: HttpRequest,
 ) -> HttpResponse {
-    let mut said = req.match_info().get("said").unwrap().to_string();
-    #[allow(clippy::borrowed_box)]
-    fn extract_operation(db: &Box<dyn DataStorage>, said: &String) -> (String, String) {
-        let r = db.get(&format!("oca.{}.operation", said)).unwrap().unwrap();
+    let said = req.match_info().get("said").unwrap().to_string();
 
-        let said_length = r.first().unwrap();
-        let parent_said = String::from_utf8_lossy(&r[1..*said_length as usize + 1]).to_string();
-        let op_length = r[*said_length as usize + 1];
-        let op = String::from_utf8_lossy(&r[*said_length as usize + 2..*said_length as usize + 2 + op_length as usize]).to_string();
-
-        (parent_said, op)
-    }
-
-    let mut history: Vec<String> = vec![];
-
-    loop {
-        let (parent_said, op) = extract_operation(&db, &said);
-        said = parent_said.clone();
-        history.push(format!("{{ \"from\": \"{}\", \"operation\": {} }}", said, op));
-
-        if said.is_empty() {
-            break;
+    let oca_facade = oca_rs::Facade::new(db.get_ref().clone());
+    let result = match oca_facade.get_oca_bundle_steps(said) {
+        Ok(oca_build_steps) => {
+            serde_json::to_value(
+                &oca_build_steps.iter().map(|s| {
+                    serde_json::json!({
+                        "from": s.parent_said,
+                        "operation": s.command,
+                    })
+                }).collect::<Vec<serde_json::Value>>()
+            ).unwrap()
+        },
+        Err(errors) => {
+            serde_json::json!({
+                "success": false,
+                "errors": errors,
+            })
         }
     };
-    history.reverse();
 
     HttpResponse::Ok()
         .content_type(ContentType::json())
-        .body(format!("[{}]", history.join(",")))
+        .body(serde_json::to_string(&result).unwrap())
 }
 
 pub async fn get_oca_bundle(
   db: web::Data<Box<dyn DataStorage>>,
   req: HttpRequest,
 ) -> HttpResponse {
-    let said = req.match_info().get("said").unwrap();
-    let r = db.get(&format!("oca.{}", said)).unwrap();
-    let oca_bundle_str = String::from_utf8(r.unwrap()).unwrap();
+    let said = req.match_info().get("said").unwrap().to_string();
+
+    let oca_facade = oca_rs::Facade::new(db.get_ref().clone());
+    let result = match oca_facade.get_oca_bundle(said) {
+        Ok(oca_bundle) => {
+            serde_json::to_value(&oca_bundle).unwrap()
+        },
+        Err(errors) => {
+            serde_json::json!({
+                "success": false,
+                "errors": errors,
+            })
+        }
+    };
 
     HttpResponse::Ok()
         .content_type(ContentType::json())
-        .body(oca_bundle_str)
+        .body(serde_json::to_string(&result).unwrap())
 }
 
 pub async fn add_bundle(

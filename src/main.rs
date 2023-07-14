@@ -3,7 +3,7 @@ use oca_repository::startup::run;
 use std::net::TcpListener;
 
 use meilisearch_sdk::client::*;
-use oca_dag::data_storage::{DataStorage, SledDataStorage};
+use oca_rs::data_storage::{DataStorage, SledDataStorage};
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
