@@ -73,6 +73,11 @@ paths:
           description: OCA Bundle SAID
           schema:
             type: string
+        - name: extend
+          in: query
+          description: Extend steps by resulted OCA Bundle
+          schema:
+            type: boolean
       responses:
         '200':
           description: Successful response
@@ -90,11 +95,6 @@ paths:
           description: OCA Bundle SAID
           schema:
             type: string
-        - name: extend
-          in: query
-          description: Extend steps by resulted OCA Bundle
-          schema:
-            type: boolean
       responses:
         '200':
           description: Successful response
