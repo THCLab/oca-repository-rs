@@ -56,7 +56,7 @@ pub async fn get_oca_bundle(
 
 #[derive(Deserialize)]
 pub struct OCAFileHistoryQueryParams {
-    expand: Option<bool>,
+    extend: Option<bool>,
 }
 
 pub async fn get_oca_file_history(
@@ -83,7 +83,7 @@ pub async fn get_oca_file_history(
                         &Item {
                             from: s.parent_said.clone().map(|said| serde_value::Value::String(said.to_string())),
                             operation: serde_json::to_value(&s.command).unwrap(),
-                            oca_bundle: if query_params.expand.unwrap_or(false) {
+                            oca_bundle: if query_params.extend.unwrap_or(false) {
                                 Some(serde_json::to_value(&s.result).unwrap())
                             } else {
                                 None

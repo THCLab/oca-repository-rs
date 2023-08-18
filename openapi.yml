@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: OCA Repository
   description: ''
-  version: 0.4.4
+  version: 0.4.7
 servers:
   - url: https://repository.oca.argo.colossi.network/api/
   - url: http://localhost:8000
@@ -90,6 +90,11 @@ paths:
           description: OCA Bundle SAID
           schema:
             type: string
+        - name: extend
+          in: query
+          description: Extend steps by resulted OCA Bundle
+          schema:
+            type: boolean
       responses:
         '200':
           description: Successful response
