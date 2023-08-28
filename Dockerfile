@@ -13,10 +13,10 @@ RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
 RUN cargo build --release
 
-FROM debian:buster-slim AS runtime
+FROM debian:bookworm-slim AS runtime
 WORKDIR /app
 RUN     apt-get update --quiet \
-        && apt-get install -y tini openssl
+        && apt-get install -y tini openssl sqlite3
 COPY --from=builder /app/target/release/oca-repository /usr/local/bin
 EXPOSE 8000
 ENTRYPOINT ["tini", "--"]

@@ -18,8 +18,7 @@ pub struct DatabaseSettings {
 
 #[derive(serde::Deserialize)]
 pub struct SearchEngineSettings {
-    pub url: String,
-    pub api_key: String,
+    pub path: String,
 }
 
 pub fn get_configuration() -> Result<Settings, config::ConfigError> {

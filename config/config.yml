@@ -3,8 +3,7 @@ application:
   port: 8000
 
 database:
-  path: "db"
+  path: "./db"
 
 search_engine:
-  url: "http://search_engine:7700"
-  api_key: "MASTER_KEY"
+  path: "./db_search/search_data.db"
