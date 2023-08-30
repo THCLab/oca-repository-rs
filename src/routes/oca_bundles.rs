@@ -164,6 +164,7 @@ pub async fn get_oca_file(
 
 }
 
+#[cfg(feature = "data_entries_xls")]
 pub async fn get_oca_data_entry(
     db: web::Data<Box<dyn DataStorage>>,
     cache_storage: web::Data<SQLiteConfig>,

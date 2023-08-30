@@ -31,11 +31,24 @@ pub fn run(
     data_storage: Box<dyn DataStorage + Send>,
     cache_storage_config: SQLiteConfig,
 ) -> Result<Server, std::io::Error> {
-
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);
         let data_storage_arc: Arc<Box<dyn DataStorage>> = Arc::new(data_storage.clone());
         let cache_storage_config_arc: Arc<SQLiteConfig> = Arc::new(cache_storage_config.clone());
+        let oca_bundles_scope = web::scope("/oca-bundles")
+            .route("", web::post().to(oca_bundles::add_oca_file))
+            .route("/search", web::get().to(oca_bundles::search))
+            .route("/{said}", web::get().to(oca_bundles::get_oca_bundle))
+            .route(
+                "/{said}/steps",
+                web::get().to(oca_bundles::get_oca_file_history),
+            )
+            .route("/{said}/ocafile", web::get().to(oca_bundles::get_oca_file));
+        #[cfg(feature = "data_entries_xls")]
+        let oca_bundles_scope = oca_bundles_scope.route(
+            "/{said}/data-entry",
+            web::get().to(oca_bundles::get_oca_data_entry),
+        );
         App::new()
             .app_data(web::Data::from(data_storage_arc))
             .app_data(web::Data::from(cache_storage_config_arc))
@@ -50,16 +63,8 @@ pub fn run(
                         web::post().to(namespaces::add_bundle),
                     )
             ) */
-            .service(
-                web::scope("/oca-bundles")
-                    .route("", web::post().to(oca_bundles::add_oca_file))
-                    .route("/search", web::get().to(oca_bundles::search))
-                    .route("/{said}", web::get().to(oca_bundles::get_oca_bundle))
-                    .route("/{said}/steps", web::get().to(oca_bundles::get_oca_file_history))
-                    .route("/{said}/ocafile", web::get().to(oca_bundles::get_oca_file))
-                    .route("/{said}/data-entry", web::get().to(oca_bundles::get_oca_data_entry))
-            )
-            // .route("/search", web::get().to(namespaces::search_bundle))
+            .service(oca_bundles_scope)
+        // .route("/search", web::get().to(namespaces::search_bundle))
     })
     .listen(listener)?
     .workers(1)
