@@ -41,8 +41,14 @@ pub async fn search(
     cache_storage: web::Data<SQLiteConfig>,
     query_params: web::Query<SearchParams>,
 ) -> HttpResponse {
-    let oca_facade = oca_rs::Facade::new(db.get_ref().clone(), cache_storage.get_ref().clone());
-    let result = oca_facade.search_oca_bundle(query_params.q.clone().unwrap_or("".to_string()));
+    let oca_facade = oca_rs::Facade::new(
+        db.get_ref().clone(),
+        cache_storage.get_ref().clone(),
+    );
+    let result = oca_facade.search_oca_bundle(
+        query_params.q.clone().unwrap_or("".to_string()),
+        10,
+    );
 
     HttpResponse::Ok()
         .content_type(ContentType::json())
