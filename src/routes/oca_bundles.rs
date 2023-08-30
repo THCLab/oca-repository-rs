@@ -157,3 +157,39 @@ pub async fn get_oca_file(
     }
 
 }
+
+pub async fn get_oca_data_entry(
+    db: web::Data<Box<dyn DataStorage>>,
+    cache_storage: web::Data<SQLiteConfig>,
+    req: HttpRequest,
+) -> actix_web::Result<actix_files::NamedFile> {
+    let configuration = crate::configuration::get_configuration()
+        .map_err(actix_web::error::ErrorInternalServerError)?;
+    let data_entries_path = configuration
+        .application
+        .data_entries_path
+        .unwrap_or("".to_string());
+    let said = req.match_info().get("said").unwrap().to_string();
+
+    let oca_facade = oca_rs::Facade::new(
+        db.get_ref().clone(),
+        cache_storage.get_ref().clone(),
+    );
+    let oca_bundle = oca_facade.get_oca_bundle(said).map_err(|e| {
+        actix_web::error::ErrorInternalServerError(e.first().unwrap().clone())
+    })?;
+    let oca_bundle_list = vec![oca_bundle.clone()];
+    let _ = oca_parser_xls::xls_parser::data_entry::generate(
+        &oca_bundle_list,
+        format!(
+            "{}/{}",
+            data_entries_path.clone(),
+            oca_bundle.said.clone().unwrap()
+        ),
+    );
+    Ok(actix_files::NamedFile::open(format!(
+        "{}/{}-data_entry.xlsx",
+        data_entries_path,
+        oca_bundle.said.clone().unwrap()
+    ))?)
+}

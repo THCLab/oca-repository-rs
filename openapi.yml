@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: OCA Repository
   description: ''
-  version: 0.4.7
+  version: 0.4.9
 servers:
   - url: https://repository.oca.argo.colossi.network/api/
   - url: http://localhost:8000
@@ -105,6 +105,23 @@ paths:
     get:
       tags: [Public API]
       summary: List OCAFile to get OCA Bundle
+      parameters:
+        - name: said
+          in: path
+          required: true
+          description: OCA Bundle SAID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+        '404':
+          description: Bundle not found
+
+  /oca-bundles/{said}/data-entry:
+    get:
+      tags: [Public API]
+      summary: Download OCA Bundle data entry XLSX file
       parameters:
         - name: said
           in: path

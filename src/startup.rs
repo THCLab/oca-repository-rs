@@ -57,6 +57,7 @@ pub fn run(
                     .route("/{said}", web::get().to(oca_bundles::get_oca_bundle))
                     .route("/{said}/steps", web::get().to(oca_bundles::get_oca_file_history))
                     .route("/{said}/ocafile", web::get().to(oca_bundles::get_oca_file))
+                    .route("/{said}/data-entry", web::get().to(oca_bundles::get_oca_data_entry))
             )
             // .route("/search", web::get().to(namespaces::search_bundle))
     })
