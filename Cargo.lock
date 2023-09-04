@@ -1464,9 +1464,9 @@ checksum = "b06a4cde4c0f271a446782e3eff8de789548ce57dbc8eca9292c27f4a42004b4"
 
 [[package]]
 name = "memchr"
-version = "2.5.0"
+version = "2.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
+checksum = "8f232d6ef707e1956a43342693d2a31e72989554d58299d7a88738cc95b0d35c"
 
 [[package]]
 name = "memoffset"
@@ -1657,6 +1657,7 @@ dependencies = [
  "config",
  "dyn-clonable",
  "indexmap",
+ "isolang",
  "oca-parser-xls",
  "oca-rs",
  "rusqlite",
@@ -1668,9 +1669,9 @@ dependencies = [
 
 [[package]]
 name = "oca-rs"
-version = "0.3.0-rc.11"
+version = "0.3.0-rc.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e02c000cd972562c374d7201592efd2291202b02180ebe7fe1800f50b19df39"
+checksum = "0f8883a7e03d2cc615d9841b9b13849457e314fa36f1515a9f6b4b525daa1226"
 dependencies = [
  "convert_case 0.6.0",
  "dyn-clonable",
@@ -1679,6 +1680,7 @@ dependencies = [
  "oca-bundle",
  "oca-dag",
  "oca-file",
+ "regex",
  "rusqlite",
  "serde",
  "serde_json",
@@ -1989,9 +1991,21 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.8.4"
+version = "1.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d0ab3ca65655bb1e41f2a8c8cd662eb4fb035e67c3f78da1d61dffe89d07300f"
+checksum = "697061221ea1b4a94a624f67d0ae2bfe4e22b8a17b6a192afb11046542cc8c47"
+dependencies = [
+ "aho-corasick",
+ "memchr",
+ "regex-automata",
+ "regex-syntax",
+]
+
+[[package]]
+name = "regex-automata"
+version = "0.3.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c2f401f4955220693b56f8ec66ee9c78abffd8d1c4f23dc41a23839eb88f0795"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -2000,9 +2014,9 @@ dependencies = [
 
 [[package]]
 name = "regex-syntax"
-version = "0.7.2"
+version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "436b050e76ed2903236f032a59761c1eb99e1b0aead2c257922771dab1fc8c78"
+checksum = "dbb5fb1acd8a1a18b3dd5be62d25485eb770e05afb408a9627d14d451bae12da"
 
 [[package]]
 name = "rmp"

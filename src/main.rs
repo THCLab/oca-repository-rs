@@ -15,11 +15,12 @@ async fn main() -> std::io::Result<()> {
     );
     let listener = TcpListener::bind(address)?;
 
+    let db_path = std::path::PathBuf::from(configuration.database.path);
     let sled_db = Box::new(
         SledDataStorage::new()
             .config(
                 SledDataStorageConfig::build()
-                    .path(configuration.database.path)
+                    .path(db_path)
                     .unwrap()
             )
     );

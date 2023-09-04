@@ -34,6 +34,7 @@ pub async fn add_oca_file(
 #[derive(Deserialize)]
 pub struct SearchParams {
     q: Option<String>,
+    page: Option<usize>,
 }
 
 pub async fn search(
@@ -45,9 +46,12 @@ pub async fn search(
         db.get_ref().clone(),
         cache_storage.get_ref().clone(),
     );
+    let limit = 10;
+    let page = query_params.page.unwrap_or(1);
     let result = oca_facade.search_oca_bundle(
         query_params.q.clone().unwrap_or("".to_string()),
-        10,
+        limit,
+        page,
     );
 
     HttpResponse::Ok()
