@@ -1,6 +1,7 @@
-use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use serde::{Serialize, Deserialize};
+use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
+use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 pub async fn add_oca_file(
     db: web::Data<Box<dyn DataStorage>>,
@@ -34,12 +35,14 @@ pub async fn add_oca_file(
 #[derive(Deserialize)]
 pub struct SearchParams {
     q: Option<String>,
+    lang: Option<isolang::Language>,
     page: Option<usize>,
 }
 
 pub async fn search(
     db: web::Data<Box<dyn DataStorage>>,
     cache_storage: web::Data<SQLiteConfig>,
+    header_language: web::Header<actix_web::http::header::AcceptLanguage>,
     query_params: web::Query<SearchParams>,
 ) -> HttpResponse {
     let oca_facade = oca_rs::Facade::new(
@@ -47,11 +50,27 @@ pub async fn search(
         cache_storage.get_ref().clone(),
     );
     let limit = 10;
-    let page = query_params.page.unwrap_or(1);
+
+    let language = if query_params.lang.is_none() {
+        isolang::Language::from_str(
+            header_language
+                .preference()
+                .to_string()
+                .split('-')
+                .collect::<Vec<&str>>()
+                .first()
+                .unwrap(),
+        )
+        .ok()
+    } else {
+        query_params.lang
+    };
+
     let result = oca_facade.search_oca_bundle(
+        language,
         query_params.q.clone().unwrap_or("".to_string()),
         limit,
-        page,
+        query_params.page.unwrap_or(1),
     );
 
     HttpResponse::Ok()
