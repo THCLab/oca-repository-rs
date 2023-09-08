@@ -28,8 +28,9 @@ async fn main() -> std::io::Result<()> {
         &configuration.search_engine.url,
         &configuration.search_engine.api_key,
     )); */
+    let cache_db_path = std::path::PathBuf::from(configuration.search_engine.path);
     let cache_storage_config = SQLiteConfig::build().path(
-        configuration.search_engine.path
+        cache_db_path
     ).unwrap();
 
     run(listener, sled_db, cache_storage_config)?.await?;

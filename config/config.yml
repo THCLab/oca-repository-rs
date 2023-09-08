@@ -7,4 +7,4 @@ database:
   path: "./db"
 
 search_engine:
-  path: "./db_search/search_data.db"
+  path: "./db_search"

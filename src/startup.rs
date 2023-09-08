@@ -1,7 +1,7 @@
 use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
 use crate::routes::health_check;
 // use crate::routes::namespaces;
-use crate::routes::oca_bundles;
+use crate::routes::{internal, oca_bundles};
 use std::sync::Arc;
 
 use actix_web::dev::Server;
@@ -64,6 +64,17 @@ pub fn run(
                     )
             ) */
             .service(oca_bundles_scope)
+            .service(
+                web::scope("/internal")
+                    .route(
+                        "/capture-bases",
+                        web::get().to(internal::fetch_all_capture_base),
+                    )
+                    .route(
+                        "/oca-bundles",
+                        web::get().to(internal::fetch_all_oca_bundle),
+                    ),
+            )
         // .route("/search", web::get().to(namespaces::search_bundle))
     })
     .listen(listener)?
