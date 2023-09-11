@@ -28,7 +28,7 @@ use std::net::TcpListener;
 
 pub fn run(
     listener: TcpListener,
-    data_storage: Box<dyn DataStorage + Send>,
+    data_storage: Box<dyn DataStorage + Send + Sync>,
     cache_storage_config: SQLiteConfig,
 ) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(move || {
