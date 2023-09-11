@@ -1,7 +1,7 @@
-use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
-use serde::{Deserialize, Serialize};
-use std::str::FromStr;
+use actix_web::{http::header::ContentType, web, HttpResponse};
+use oca_rs::{
+    data_storage::DataStorage, repositories::SQLiteConfig, EncodeBundle,
+};
 
 pub async fn fetch_all_oca_bundle(
     db: web::Data<Box<dyn DataStorage>>,
@@ -15,7 +15,14 @@ pub async fn fetch_all_oca_bundle(
         Ok(oca_bundles) => {
             serde_json::json!({
                 "success": true,
-                "results": oca_bundles,
+                "results":
+                    oca_bundles.iter().map(|oca_bundle| {
+                        serde_json::from_str(
+                            &String::from_utf8(
+                                oca_bundle.encode().unwrap()
+                            ).unwrap()
+                        ).unwrap()
+                    }).collect::<Vec<serde_json::Value>>(),
             })
         }
         Err(errors) => {

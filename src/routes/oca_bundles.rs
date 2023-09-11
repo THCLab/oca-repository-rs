@@ -1,5 +1,7 @@
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
+use oca_rs::{
+    data_storage::DataStorage, repositories::SQLiteConfig, EncodeBundle,
+};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
@@ -66,13 +68,27 @@ pub async fn search(
         query_params.lang
     };
 
-    let result = oca_facade.search_oca_bundle(
+    let search_result = oca_facade.search_oca_bundle(
         language,
         query_params.q.clone().unwrap_or("".to_string()),
         limit,
         query_params.page.unwrap_or(1),
     );
 
+    let result = serde_json::json!({
+        "r": search_result.records.iter().map(|r| {
+            serde_json::json!({
+                "oca_bundle":
+                    serde_json::from_str::<serde_json::Value>(
+                        &String::from_utf8(
+                            r.oca_bundle.encode().unwrap()
+                        ).unwrap()
+                    ).unwrap(),
+                "metadata": r.metadata,
+            })
+        }).collect::<Vec<serde_json::Value>>(),
+        "m": search_result.metadata,
+    });
     HttpResponse::Ok()
         .content_type(ContentType::json())
         .body(serde_json::to_string(&result).unwrap())
@@ -88,7 +104,9 @@ pub async fn get_oca_bundle(
     let oca_facade = oca_rs::Facade::new(db.get_ref().clone(), cache_storage.get_ref().clone());
     let result = match oca_facade.get_oca_bundle(said) {
         Ok(oca_bundle) => {
-            serde_json::to_value(&oca_bundle).unwrap()
+            serde_json::from_str(
+                &String::from_utf8(oca_bundle.encode().unwrap()).unwrap()
+            ).unwrap()
         },
         Err(errors) => {
             serde_json::json!({
