@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: OCA Repository
   description: ''
-  version: 0.4.9
+  version: 0.4.14
 servers:
   - url: https://repository.oca.argo.colossi.network/api/
   - url: http://localhost:8000
@@ -54,6 +54,12 @@ paths:
           in: query
           required: true
           description: Query to search through OCA Bundles
+          schema:
+            type: string
+        - name: lang
+          in: query
+          required: false
+          description: Language to prioritize in search
           schema:
             type: string
       responses:
@@ -127,6 +133,23 @@ paths:
           in: path
           required: true
           description: OCA Bundle SAID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+        '404':
+          description: Bundle not found
+
+  /explore/{said}:
+    get:
+      tags: [Public API]
+      summary: Get relations of any OCA object
+      parameters:
+        - name: said
+          in: path
+          required: true
+          description: OCA object SAID
           schema:
             type: string
       responses:
