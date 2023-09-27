@@ -19,12 +19,8 @@ pub async fn fetch_relations(
                 "success": true,
                 "object_type": relationship.base_object.object_type,
                 "relatives": relationship.relations.iter().map(|r| {
-                    serde_json::json!({
-                        "said": r.said,
-                        "object_type": r.object_type,
-                    })
-                }).collect::<Vec<serde_json::Value>>(),
-
+                    serde_json::to_value(r).unwrap()
+                }).collect::<Vec<_>>(),
             })
         }
         None => {
