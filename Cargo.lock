@@ -1568,9 +1568,9 @@ dependencies = [
 
 [[package]]
 name = "oca-bundle"
-version = "0.3.0-rc.10"
+version = "0.3.0-rc.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b1739d5cad0053282ef0e615caff0916c7298a47449d69ced782c18c56a72fa"
+checksum = "3945124fd2bad2cd776f1ade23923be0343685eb3572230f051080d4e5b259e0"
 dependencies = [
  "cascade",
  "convert_case 0.6.0",
@@ -1632,9 +1632,9 @@ dependencies = [
 
 [[package]]
 name = "oca-parser-xls"
-version = "2.0.0-rc.1"
+version = "2.0.0-rc.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6643a0f90a9d5836a9b42fc12e920a5b3c8df6397125e3fa30f605aa223202e6"
+checksum = "b592bf8c5fe3ee01d390ada6dc4c98e07f13d8afc67795072d041f28685fe87d"
 dependencies = [
  "calamine",
  "clap 3.2.25",
@@ -1669,9 +1669,9 @@ dependencies = [
 
 [[package]]
 name = "oca-rs"
-version = "0.3.0-rc.17"
+version = "0.3.0-rc.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7728ac3d9540e023e7412575aee4f4c8e58d3045bd0f18d7b394484f75aa567a"
+checksum = "9c99a29b2c6e9efe60e04992266e2eb4ca21950730258d3551ec91678f59bd13"
 dependencies = [
  "convert_case 0.6.0",
  "dyn-clonable",

@@ -1,7 +1,7 @@
 use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
 use crate::routes::health_check;
 // use crate::routes::namespaces;
-use crate::routes::{explore, internal, oca_bundles};
+use crate::routes::{explore, internal, objects, oca_bundles};
 use std::sync::Arc;
 
 use actix_web::dev::Server;
@@ -64,6 +64,10 @@ pub fn run(
                     )
             ) */
             .service(oca_bundles_scope)
+            .service(
+                web::scope("/objects")
+                    .route("", web::get().to(objects::fetch_objects)),
+            )
             .service(
                 web::scope("/explore")
                     .route("/{said}", web::get().to(explore::fetch_relations)),
