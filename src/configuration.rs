@@ -2,6 +2,7 @@
 pub struct Settings {
     pub application: ApplicationSettings,
     pub database: DatabaseSettings,
+    pub cache_storage: CacheStorageSettings,
     pub search_engine: SearchEngineSettings,
 }
 
@@ -14,6 +15,11 @@ pub struct ApplicationSettings {
 
 #[derive(serde::Deserialize)]
 pub struct DatabaseSettings {
+    pub path: String,
+}
+
+#[derive(serde::Deserialize)]
+pub struct CacheStorageSettings {
     pub path: String,
 }
 

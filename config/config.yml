@@ -6,5 +6,8 @@ application:
 database:
   path: "./db"
 
+cache_storage:
+  path: "./cache"
+
 search_engine:
   path: "./db_search"

@@ -1,7 +1,7 @@
+use std::sync::Mutex;
+
 use actix_web::{http::header::ContentType, web, HttpResponse};
-use oca_rs::{
-    data_storage::DataStorage, repositories::SQLiteConfig, EncodeBundle,
-};
+use oca_rs::EncodeBundle;
 
 #[derive(serde::Deserialize)]
 pub struct FetchAllOCABundleParams {
@@ -9,16 +9,11 @@ pub struct FetchAllOCABundleParams {
 }
 
 pub async fn fetch_all_oca_bundle(
-    db: web::Data<Box<dyn DataStorage>>,
-    cache_storage: web::Data<SQLiteConfig>,
+    oca_facade: web::Data<Mutex<oca_rs::Facade>>,
     query_params: web::Query<FetchAllOCABundleParams>,
 ) -> HttpResponse {
-    let oca_facade = oca_rs::Facade::new(
-        db.get_ref().clone(),
-        cache_storage.get_ref().clone(),
-    );
     let page = query_params.page.unwrap_or(1);
-    let result = match oca_facade.fetch_all_oca_bundle(100, page) {
+    let result = match oca_facade.lock().unwrap().fetch_all_oca_bundle(100, page) {
         Ok(all_oca_bundles) => {
             serde_json::json!({
                 "success": true,
@@ -52,16 +47,11 @@ pub struct FetchAllCaptureBaseParams {
 }
 
 pub async fn fetch_all_capture_base(
-    db: web::Data<Box<dyn DataStorage>>,
-    cache_storage: web::Data<SQLiteConfig>,
+    oca_facade: web::Data<Mutex<oca_rs::Facade>>,
     query_params: web::Query<FetchAllCaptureBaseParams>,
 ) -> HttpResponse {
-    let oca_facade = oca_rs::Facade::new(
-        db.get_ref().clone(),
-        cache_storage.get_ref().clone(),
-    );
     let page = query_params.page.unwrap_or(1);
-    let result = match oca_facade.fetch_all_capture_base(100, page) {
+    let result = match oca_facade.lock().unwrap().fetch_all_capture_base(100, page) {
         Ok(all_capture_bases) => {
             serde_json::json!({
                 "success": true,

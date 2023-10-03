@@ -1,5 +1,5 @@
-use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
 use crate::routes::health_check;
+use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
 // use crate::routes::namespaces;
 use crate::routes::{explore, internal, objects, oca_bundles};
 use std::sync::Arc;
@@ -29,12 +29,16 @@ use std::net::TcpListener;
 pub fn run(
     listener: TcpListener,
     data_storage: Box<dyn DataStorage + Send + Sync>,
+    filesystem_storage: Box<dyn DataStorage + Send + Sync>,
     cache_storage_config: SQLiteConfig,
 ) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);
-        let data_storage_arc: Arc<Box<dyn DataStorage>> = Arc::new(data_storage.clone());
-        let cache_storage_config_arc: Arc<SQLiteConfig> = Arc::new(cache_storage_config.clone());
+        let facade_arc = Arc::new(std::sync::Mutex::new(oca_rs::Facade::new(
+            data_storage.clone(),
+            filesystem_storage.clone(),
+            cache_storage_config.clone(),
+        )));
         let oca_bundles_scope = web::scope("/oca-bundles")
             .route("", web::post().to(oca_bundles::add_oca_file))
             .route("/search", web::get().to(oca_bundles::search))
@@ -50,8 +54,7 @@ pub fn run(
             web::get().to(oca_bundles::get_oca_data_entry),
         );
         App::new()
-            .app_data(web::Data::from(data_storage_arc))
-            .app_data(web::Data::from(cache_storage_config_arc))
+            .app_data(web::Data::from(facade_arc))
             .route("/health_check", web::get().to(health_check))
             /* .route("/namespaces", web::post().to(namespaces::add_namespace))
             .service(
