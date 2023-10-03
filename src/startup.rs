@@ -2,7 +2,6 @@ use crate::routes::health_check;
 use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
 // use crate::routes::namespaces;
 use crate::routes::{explore, internal, objects, oca_bundles};
-use std::sync::Arc;
 
 use actix_web::dev::Server;
 use actix_web::{web, App, HttpServer};
@@ -34,11 +33,12 @@ pub fn run(
 ) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);
-        let facade_arc = Arc::new(std::sync::Mutex::new(oca_rs::Facade::new(
-            data_storage.clone(),
-            filesystem_storage.clone(),
-            cache_storage_config.clone(),
-        )));
+        let oca_facade_web_data =
+            web::Data::new(std::sync::Mutex::new(oca_rs::Facade::new(
+                data_storage.clone(),
+                filesystem_storage.clone(),
+                cache_storage_config.clone(),
+            )));
         let oca_bundles_scope = web::scope("/oca-bundles")
             .route("", web::post().to(oca_bundles::add_oca_file))
             .route("/search", web::get().to(oca_bundles::search))
@@ -54,7 +54,7 @@ pub fn run(
             web::get().to(oca_bundles::get_oca_data_entry),
         );
         App::new()
-            .app_data(web::Data::from(facade_arc))
+            .app_data(oca_facade_web_data.clone())
             .route("/health_check", web::get().to(health_check))
             /* .route("/namespaces", web::post().to(namespaces::add_namespace))
             .service(

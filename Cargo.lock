@@ -1669,7 +1669,9 @@ dependencies = [
 
 [[package]]
 name = "oca-rs"
-version = "0.3.0-rc.18"
+version = "0.3.0-rc.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2ac16a1ab54391b15d8aeb29261f105ceaf3a870a899d062bbbbb0d06ca6e569"
 dependencies = [
  "convert_case 0.6.0",
  "dyn-clonable",
