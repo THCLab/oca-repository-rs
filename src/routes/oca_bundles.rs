@@ -8,7 +8,21 @@ pub async fn add_oca_file(
     item: web::Bytes,
     _req: HttpRequest,
 ) -> HttpResponse {
-    let ocafile = String::from_utf8(item.to_vec()).unwrap();
+    let ocafile = match String::from_utf8(item.to_vec()) {
+        Ok(parsed) => parsed,
+        Err(e) => {
+            return HttpResponse::UnprocessableEntity()
+                .content_type(ContentType::json())
+                .body(serde_json::to_string(&vec![e.to_string()]).unwrap())
+        }
+    };
+
+    if ocafile.is_empty() {
+        let error = "OCA File can't be empty";
+        return HttpResponse::UnprocessableEntity()
+            .content_type(ContentType::json())
+            .body(serde_json::to_string(&vec![error]).unwrap())
+    }
 
     let result = match oca_facade.lock().unwrap().build_from_ocafile(ocafile) {
         Ok(oca_bundle) => {
