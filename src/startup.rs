@@ -34,6 +34,7 @@ pub fn run(
 ) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);
+        #[allow(clippy::arc_with_non_send_sync)]
         let facade_arc = Arc::new(std::sync::Mutex::new(oca_rs::Facade::new(
             data_storage.clone(),
             filesystem_storage.clone(),
