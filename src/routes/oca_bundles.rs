@@ -21,16 +21,20 @@ pub async fn add_oca_file(
         let error = "OCA File can't be empty";
         return HttpResponse::UnprocessableEntity()
             .content_type(ContentType::json())
-            .body(serde_json::to_string(&vec![error]).unwrap())
+            .body(serde_json::to_string(&vec![error]).unwrap());
     }
 
-    let result = match oca_facade.lock().unwrap().build_from_ocafile(ocafile) {
+    let result = match oca_facade
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .build_from_ocafile(ocafile)
+    {
         Ok(oca_bundle) => {
             serde_json::json!({
                 "success": true,
                 "said": oca_bundle.said.unwrap(),
             })
-        },
+        }
         Err(errors) => {
             serde_json::json!({
                 "success": false,
@@ -73,12 +77,15 @@ pub async fn search(
         query_params.lang
     };
 
-    let search_result = oca_facade.lock().unwrap().search_oca_bundle(
-        language,
-        query_params.q.clone().unwrap_or("".to_string()),
-        limit,
-        query_params.page.unwrap_or(1),
-    );
+    let search_result = oca_facade
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .search_oca_bundle(
+            language,
+            query_params.q.clone().unwrap_or("".to_string()),
+            limit,
+            query_params.page.unwrap_or(1),
+        );
 
     let result = serde_json::json!({
         "r": search_result.records.iter().map(|r| {
@@ -105,12 +112,15 @@ pub async fn get_oca_bundle(
 ) -> HttpResponse {
     let said = req.match_info().get("said").unwrap().to_string();
 
-    let result = match oca_facade.lock().unwrap().get_oca_bundle(said) {
-        Ok(oca_bundle) => {
-            serde_json::from_str(
-                &String::from_utf8(oca_bundle.encode().unwrap()).unwrap()
-            ).unwrap()
-        },
+    let result = match oca_facade
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .get_oca_bundle(said)
+    {
+        Ok(oca_bundle) => serde_json::from_str(
+            &String::from_utf8(oca_bundle.encode().unwrap()).unwrap(),
+        )
+        .unwrap(),
         Err(errors) => {
             serde_json::json!({
                 "success": false,
@@ -144,24 +154,31 @@ pub async fn get_oca_file_history(
 
     let said = req.match_info().get("said").unwrap().to_string();
 
-    let result = match oca_facade.lock().unwrap().get_oca_bundle_steps(said) {
-        Ok(oca_build_steps) => {
-            serde_json::to_value(
-                &oca_build_steps.iter().map(|s| {
-                    serde_json::to_value(
-                        &Item {
-                            from: s.parent_said.clone().map(|said| serde_value::Value::String(said.to_string())),
-                            operation: serde_json::to_value(&s.command).unwrap(),
-                            oca_bundle: if query_params.extend.unwrap_or(false) {
-                                Some(serde_json::to_value(&s.result).unwrap())
-                            } else {
-                                None
-                            },
-                        }
-                    ).unwrap()
-                }).collect::<Vec<serde_json::Value>>()
-            ).unwrap()
-        },
+    let result = match oca_facade
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .get_oca_bundle_steps(said)
+    {
+        Ok(oca_build_steps) => serde_json::to_value(
+            &oca_build_steps
+                .iter()
+                .map(|s| {
+                    serde_json::to_value(&Item {
+                        from: s.parent_said.clone().map(|said| {
+                            serde_value::Value::String(said.to_string())
+                        }),
+                        operation: serde_json::to_value(&s.command).unwrap(),
+                        oca_bundle: if query_params.extend.unwrap_or(false) {
+                            Some(serde_json::to_value(&s.result).unwrap())
+                        } else {
+                            None
+                        },
+                    })
+                    .unwrap()
+                })
+                .collect::<Vec<serde_json::Value>>(),
+        )
+        .unwrap(),
         Err(errors) => {
             serde_json::json!({
                 "success": false,
@@ -181,27 +198,24 @@ pub async fn get_oca_file(
 ) -> HttpResponse {
     let said = req.match_info().get("said").unwrap().to_string();
 
-    match oca_facade.lock().unwrap().get_oca_bundle_ocafile(said) {
-        Ok(ocafile) => {
-
-            HttpResponse::Ok()
-                .content_type(ContentType::plaintext())
-                .body(ocafile)
-        },
+    match oca_facade
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .get_oca_bundle_ocafile(said)
+    {
+        Ok(ocafile) => HttpResponse::Ok()
+            .content_type(ContentType::plaintext())
+            .body(ocafile),
         Err(errors) => {
-            HttpResponse::Ok()
-                .content_type(ContentType::json())
-                .body(
-                    serde_json::to_string(
-                        &serde_json::json!({
-                            "success": false,
-                            "errors": errors,
-                        })
-                    ).unwrap()
-                )
+            HttpResponse::Ok().content_type(ContentType::json()).body(
+                serde_json::to_string(&serde_json::json!({
+                    "success": false,
+                    "errors": errors,
+                }))
+                .unwrap(),
+            )
         }
     }
-
 }
 
 #[cfg(feature = "data_entries_xls")]
@@ -217,9 +231,15 @@ pub async fn get_oca_data_entry(
         .unwrap_or("".to_string());
     let said = req.match_info().get("said").unwrap().to_string();
 
-    let oca_bundle = oca_facade.lock().unwrap().get_oca_bundle(said).map_err(|e| {
-        actix_web::error::ErrorInternalServerError(e.first().unwrap().clone())
-    })?;
+    let oca_bundle = oca_facade
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .get_oca_bundle(said)
+        .map_err(|e| {
+            actix_web::error::ErrorInternalServerError(
+                e.first().unwrap().clone(),
+            )
+        })?;
     let oca_bundle_list = vec![oca_bundle.clone()];
     let _ = oca_parser_xls::xls_parser::data_entry::generate(
         &oca_bundle_list,

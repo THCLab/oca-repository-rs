@@ -13,7 +13,11 @@ pub async fn fetch_all_oca_bundle(
     query_params: web::Query<FetchAllOCABundleParams>,
 ) -> HttpResponse {
     let page = query_params.page.unwrap_or(1);
-    let result = match oca_facade.lock().unwrap().fetch_all_oca_bundle(100, page) {
+    let result = match oca_facade
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .fetch_all_oca_bundle(100, page)
+    {
         Ok(all_oca_bundles) => {
             serde_json::json!({
                 "success": true,
@@ -51,7 +55,11 @@ pub async fn fetch_all_capture_base(
     query_params: web::Query<FetchAllCaptureBaseParams>,
 ) -> HttpResponse {
     let page = query_params.page.unwrap_or(1);
-    let result = match oca_facade.lock().unwrap().fetch_all_capture_base(100, page) {
+    let result = match oca_facade
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .fetch_all_capture_base(100, page)
+    {
         Ok(all_capture_bases) => {
             serde_json::json!({
                 "success": true,

@@ -18,7 +18,11 @@ pub async fn fetch_objects(
         .map(|s| s.to_string())
         .collect();
 
-    let result = match oca_facade.lock().unwrap().get_oca_objects(saids) {
+    let result = match oca_facade
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .get_oca_objects(saids)
+    {
         Ok(objects) => {
             serde_json::json!({
                 "success": true,

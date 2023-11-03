@@ -8,7 +8,11 @@ pub async fn fetch_relations(
 ) -> HttpResponse {
     let said = req.match_info().get("said").unwrap().to_string();
 
-    let result = match oca_facade.lock().unwrap().explore(said) {
+    let result = match oca_facade
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .explore(said)
+    {
         Some(relationship) => {
             serde_json::json!({
                 "success": true,
