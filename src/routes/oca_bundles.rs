@@ -2,6 +2,7 @@ use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 use oca_rs::EncodeBundle;
 use serde::{Deserialize, Serialize};
 use std::{str::FromStr, sync::Mutex};
+use said::SelfAddressingIdentifier;
 
 pub async fn add_oca_file(
     oca_facade: web::Data<Mutex<oca_rs::Facade>>,
@@ -106,32 +107,38 @@ pub async fn search(
         .body(serde_json::to_string(&result).unwrap())
 }
 
+#[derive(Deserialize)]
+pub struct OCABundleQueryParams {
+    w: Option<bool>, // with_dependencies
+}
+
 pub async fn get_oca_bundle(
     oca_facade: web::Data<Mutex<oca_rs::Facade>>,
     req: HttpRequest,
+    query_params: web::Query<OCABundleQueryParams>
 ) -> HttpResponse {
-    let said = req.match_info().get("said").unwrap().to_string();
+    let said_str = req.match_info().get("said").unwrap().to_string();
+    let said = SelfAddressingIdentifier::from_str(&said_str).unwrap();
+
+    let with_dependencies = query_params.w.unwrap_or(false);
 
     let result = match oca_facade
         .lock()
         .unwrap_or_else(|e| e.into_inner())
-        .get_oca_bundle(said)
+        .get_oca_bundle(said, with_dependencies)
     {
-        Ok(oca_bundle) => serde_json::from_str(
-            &String::from_utf8(oca_bundle.encode().unwrap()).unwrap(),
-        )
-        .unwrap(),
+        Ok(oca_bundle) => serde_json::to_string_pretty(&oca_bundle).expect("Failed to serialize oca_bundle"),
         Err(errors) => {
-            serde_json::json!({
+            serde_json::to_string(&serde_json::json!({
                 "success": false,
                 "errors": errors,
-            })
+            })).expect("Failed to serialize errors")
         }
     };
 
     HttpResponse::Ok()
         .content_type(ContentType::json())
-        .body(serde_json::to_string(&result).unwrap())
+        .body(result)
 }
 
 #[derive(Deserialize)]
@@ -152,7 +159,8 @@ pub async fn get_oca_file_history(
         oca_bundle: Option<serde_json::Value>,
     }
 
-    let said = req.match_info().get("said").unwrap().to_string();
+    let said_str = req.match_info().get("said").unwrap().to_string();
+    let said = SelfAddressingIdentifier::from_str(&said_str).unwrap();
 
     let result = match oca_facade
         .lock()
@@ -196,12 +204,13 @@ pub async fn get_oca_file(
     oca_facade: web::Data<Mutex<oca_rs::Facade>>,
     req: HttpRequest,
 ) -> HttpResponse {
-    let said = req.match_info().get("said").unwrap().to_string();
+    let said_str = req.match_info().get("said").unwrap().to_string();
+    let said = SelfAddressingIdentifier::from_str(&said_str).unwrap();
 
     match oca_facade
         .lock()
         .unwrap_or_else(|e| e.into_inner())
-        .get_oca_bundle_ocafile(said)
+        .get_oca_bundle_ocafile(said, true)
     {
         Ok(ocafile) => HttpResponse::Ok()
             .content_type(ContentType::plaintext())

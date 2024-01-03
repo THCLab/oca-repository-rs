@@ -27,11 +27,28 @@ docker run
 
 ## Development
 
+With Docker and latest release
+
 ```
 git clone git@github.com:THCLab/oca-repository-rs.git
 
 docker-compose up
 ```
+
+Locally with local build:
+
+```
+cargo build
+```
+
+```
+./target/debug/oca-repository
+```
+
+This would start on default port `8000` insance of repository.
+You can then use `curl` for playing with api or simply go to `https://repository.oca.argo.colossi.network/`
+and switch servers to `localhost:8000` and use swagger.
+
 
 Add OCA Bundle:
 ```

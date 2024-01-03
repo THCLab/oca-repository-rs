@@ -23,9 +23,9 @@ paths:
               type: string
             example: |
               ADD ATTRIBUTE d=Text i=Text passed=Boolean
-              
+
               ADD META en PROPS name="Entrance credential" description="Entrance credential"
-              
+
               ADD CHARACTER_ENCODING ATTRS d=utf-8 i=utf-8 passed=utf-8
               ADD CONFORMANCE ATTRS d=M i=M passed=M
               ADD LABEL en ATTRS d="Schema digest" i="Credential Issuee" passed="Passed"
@@ -79,9 +79,18 @@ paths:
           description: OCA Bundle SAID
           schema:
             type: string
+        - name: w
+          in: query
+          description: With dependecies - dereference all nested SAID and provide in form of an array
+          schema:
+            type: boolean
       responses:
         '200':
           description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BundleWithDeps'
         '404':
           description: Bundle not found
 
@@ -180,3 +189,15 @@ components:
     namespaceToken:
       type: http
       scheme: bearer
+  schemas:
+    BundleWithDeps:
+      type: object
+      properties:
+        bundles:
+          type: object
+          description: Main oca bundle
+        dependencies:
+          type: array
+          items:
+            type: object
+            description: oca bundle
