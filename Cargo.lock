@@ -1598,7 +1598,7 @@ dependencies = [
 
 [[package]]
 name = "oca-ast"
-version = "0.3.7"
+version = "0.4.1-rc.1"
 dependencies = [
  "env_logger",
  "indexmap",
@@ -1643,7 +1643,7 @@ dependencies = [
 
 [[package]]
 name = "oca-bundle"
-version = "0.3.7"
+version = "0.4.1-rc.1"
 dependencies = [
  "cascade",
  "convert_case 0.6.0",
@@ -1654,7 +1654,7 @@ dependencies = [
  "isolang",
  "lazy_static",
  "linked-hash-map",
- "oca-ast 0.3.7",
+ "oca-ast 0.4.1-rc.1",
  "paste",
  "piccolo",
  "regex",
@@ -1670,13 +1670,13 @@ dependencies = [
 
 [[package]]
 name = "oca-dag"
-version = "0.3.7"
+version = "0.4.1-rc.1"
 dependencies = [
  "dyn-clonable",
  "indexmap",
  "isolang",
- "oca-ast 0.3.7",
- "oca-bundle 0.3.7",
+ "oca-ast 0.4.1-rc.1",
+ "oca-bundle 0.4.1-rc.1",
  "said 0.3.0",
  "serde",
  "serde_json",
@@ -1685,14 +1685,14 @@ dependencies = [
 
 [[package]]
 name = "oca-file"
-version = "0.3.7"
+version = "0.4.1-rc.1"
 dependencies = [
  "clap 4.3.5",
  "convert_case 0.6.0",
  "env_logger",
  "indexmap",
  "log",
- "oca-ast 0.3.7",
+ "oca-ast 0.4.1-rc.1",
  "pest",
  "pest_derive",
  "pretty_assertions",
@@ -1744,13 +1744,13 @@ dependencies = [
 
 [[package]]
 name = "oca-rs"
-version = "0.3.7"
+version = "0.4.1-rc.1"
 dependencies = [
  "dyn-clonable",
  "isolang",
  "log",
- "oca-ast 0.3.7",
- "oca-bundle 0.3.7",
+ "oca-ast 0.4.1-rc.1",
+ "oca-bundle 0.4.1-rc.1",
  "oca-dag",
  "oca-file",
  "regex",
