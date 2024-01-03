@@ -1599,6 +1599,8 @@ dependencies = [
 [[package]]
 name = "oca-ast"
 version = "0.4.1-rc.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a9e5f2360c968cbf4a3bce1671c5523f668ed8b3d69a496ab7a09b47aed638fa"
 dependencies = [
  "env_logger",
  "indexmap",
@@ -1644,6 +1646,8 @@ dependencies = [
 [[package]]
 name = "oca-bundle"
 version = "0.4.1-rc.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3e791fd6a314aa34903ae5a4a2d8fa913d1ed486b8f5bf68826fb1e30e132ec"
 dependencies = [
  "cascade",
  "convert_case 0.6.0",
@@ -1671,6 +1675,8 @@ dependencies = [
 [[package]]
 name = "oca-dag"
 version = "0.4.1-rc.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6cc9ce6398d4861e4638956377ab61da6edaade3bae7576eae8fc962c64c7a74"
 dependencies = [
  "dyn-clonable",
  "indexmap",
@@ -1686,6 +1692,8 @@ dependencies = [
 [[package]]
 name = "oca-file"
 version = "0.4.1-rc.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f10fd7b8a278e2f3869b30051af3440c2e670e56bee5a932bddcb3dcf04a64eb"
 dependencies = [
  "clap 4.3.5",
  "convert_case 0.6.0",
@@ -1723,7 +1731,7 @@ dependencies = [
 
 [[package]]
 name = "oca-repository"
-version = "0.1.0"
+version = "0.5.0"
 dependencies = [
  "actix-files",
  "actix-web",
@@ -1745,6 +1753,8 @@ dependencies = [
 [[package]]
 name = "oca-rs"
 version = "0.4.1-rc.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3a563a630d8b58c625f928f60e435c59abd6f6eaf8a6ec4abff3a67566c06415"
 dependencies = [
  "dyn-clonable",
  "isolang",
