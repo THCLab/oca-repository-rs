@@ -238,29 +238,30 @@ pub async fn get_oca_data_entry(
         .application
         .data_entries_path
         .unwrap_or("".to_string());
-    let said = req.match_info().get("said").unwrap().to_string();
+    let said_str = req.match_info().get("said").unwrap().to_string();
+    let said = SelfAddressingIdentifier::from_str(&said_str).unwrap();
 
     let oca_bundle = oca_facade
         .lock()
         .unwrap_or_else(|e| e.into_inner())
-        .get_oca_bundle(said)
+        .get_oca_bundle(said, false)
         .map_err(|e| {
             actix_web::error::ErrorInternalServerError(
                 e.first().unwrap().clone(),
             )
         })?;
-    let oca_bundle_list = vec![oca_bundle.clone()];
+    let oca_bundle_list = vec![oca_bundle.bundle.clone()];
     let _ = oca_parser_xls::xls_parser::data_entry::generate(
         &oca_bundle_list,
         format!(
             "{}/{}",
             data_entries_path.clone(),
-            oca_bundle.said.clone().unwrap()
+            oca_bundle.bundle.said.clone().unwrap()
         ),
     );
     Ok(actix_files::NamedFile::open(format!(
         "{}/{}-data_entry.xlsx",
         data_entries_path,
-        oca_bundle.said.clone().unwrap()
+        oca_bundle.bundle.said.clone().unwrap()
     ))?)
 }
