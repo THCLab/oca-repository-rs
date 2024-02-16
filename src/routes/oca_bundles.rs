@@ -1,8 +1,8 @@
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 use oca_rs::EncodeBundle;
+use said::SelfAddressingIdentifier;
 use serde::{Deserialize, Serialize};
 use std::{str::FromStr, sync::Mutex};
-use said::SelfAddressingIdentifier;
 
 pub async fn add_oca_file(
     oca_facade: web::Data<Mutex<oca_rs::Facade>>,
@@ -115,10 +115,23 @@ pub struct OCABundleQueryParams {
 pub async fn get_oca_bundle(
     oca_facade: web::Data<Mutex<oca_rs::Facade>>,
     req: HttpRequest,
-    query_params: web::Query<OCABundleQueryParams>
+    query_params: web::Query<OCABundleQueryParams>,
 ) -> HttpResponse {
     let said_str = req.match_info().get("said").unwrap().to_string();
-    let said = SelfAddressingIdentifier::from_str(&said_str).unwrap();
+    let said = match SelfAddressingIdentifier::from_str(&said_str) {
+        Ok(said) => said,
+        Err(e) => {
+            return HttpResponse::UnprocessableEntity()
+                .content_type(ContentType::json())
+                .body(
+                    serde_json::to_string(&vec![format!(
+                        "Invalid SAID: {}",
+                        e
+                    )])
+                    .unwrap(),
+                )
+        }
+    };
 
     let with_dependencies = query_params.w.unwrap_or(false);
 
@@ -127,13 +140,13 @@ pub async fn get_oca_bundle(
         .unwrap_or_else(|e| e.into_inner())
         .get_oca_bundle(said, with_dependencies)
     {
-        Ok(oca_bundle) => serde_json::to_string_pretty(&oca_bundle).expect("Failed to serialize oca_bundle"),
-        Err(errors) => {
-            serde_json::to_string(&serde_json::json!({
-                "success": false,
-                "errors": errors,
-            })).expect("Failed to serialize errors")
-        }
+        Ok(oca_bundle) => serde_json::to_string_pretty(&oca_bundle)
+            .expect("Failed to serialize oca_bundle"),
+        Err(errors) => serde_json::to_string(&serde_json::json!({
+            "success": false,
+            "errors": errors,
+        }))
+        .expect("Failed to serialize errors"),
     };
 
     HttpResponse::Ok()
@@ -160,7 +173,20 @@ pub async fn get_oca_file_history(
     }
 
     let said_str = req.match_info().get("said").unwrap().to_string();
-    let said = SelfAddressingIdentifier::from_str(&said_str).unwrap();
+    let said = match SelfAddressingIdentifier::from_str(&said_str) {
+        Ok(said) => said,
+        Err(e) => {
+            return HttpResponse::UnprocessableEntity()
+                .content_type(ContentType::json())
+                .body(
+                    serde_json::to_string(&vec![format!(
+                        "Invalid SAID: {}",
+                        e
+                    )])
+                    .unwrap(),
+                )
+        }
+    };
 
     let result = match oca_facade
         .lock()
@@ -205,7 +231,20 @@ pub async fn get_oca_file(
     req: HttpRequest,
 ) -> HttpResponse {
     let said_str = req.match_info().get("said").unwrap().to_string();
-    let said = SelfAddressingIdentifier::from_str(&said_str).unwrap();
+    let said = match SelfAddressingIdentifier::from_str(&said_str) {
+        Ok(said) => said,
+        Err(e) => {
+            return HttpResponse::UnprocessableEntity()
+                .content_type(ContentType::json())
+                .body(
+                    serde_json::to_string(&vec![format!(
+                        "Invalid SAID: {}",
+                        e
+                    )])
+                    .unwrap(),
+                )
+        }
+    };
 
     match oca_facade
         .lock()
@@ -239,7 +278,12 @@ pub async fn get_oca_data_entry(
         .data_entries_path
         .unwrap_or("".to_string());
     let said_str = req.match_info().get("said").unwrap().to_string();
-    let said = SelfAddressingIdentifier::from_str(&said_str).unwrap();
+    let said = SelfAddressingIdentifier::from_str(&said_str).map_err(|e| {
+        actix_web::error::ErrorUnprocessableEntity(format!(
+            "Invalid SAID: {}",
+            e
+        ))
+    })?;
 
     let oca_bundle = oca_facade
         .lock()
