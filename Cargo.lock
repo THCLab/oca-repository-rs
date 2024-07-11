@@ -1596,9 +1596,9 @@ dependencies = [
 
 [[package]]
 name = "oca-ast"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0183ca33a02626bad893548a0830e223e72cd5c105fd48a82a94133ac1e09472"
+checksum = "33cb0a07c3f11a92b955de4310d97905aa07ca62c55cf634378d7666078a3d84"
 dependencies = [
  "env_logger",
  "indexmap 1.9.3",
@@ -1616,9 +1616,9 @@ dependencies = [
 
 [[package]]
 name = "oca-bundle"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c4c180f220071ad89d94d6af4b229dbe2fb2b0e03581f25f38f90afb753c3641"
+checksum = "3cab75939a9dca546b7749ca03eaec2a46a6925560e425e2fd55d866677f02be"
 dependencies = [
  "cascade",
  "convert_case 0.6.0",
@@ -1645,9 +1645,9 @@ dependencies = [
 
 [[package]]
 name = "oca-dag"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "80278fa295a11ee8d9a3b5fdc9b3cd3860161a532c8357f66473df16887b910c"
+checksum = "eb0f83d3d110623557e29e7b9f4abb47ef921d8e1a279afc62439550eaa46a65"
 dependencies = [
  "dyn-clonable",
  "indexmap 1.9.3",
@@ -1662,9 +1662,9 @@ dependencies = [
 
 [[package]]
 name = "oca-file"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3fa4ebb44251d5d16fceb87770a5f8bb5a3e0de7136127a17ceba0918087795"
+checksum = "3fd93b7225007789980b8f615b0cc8f988ec96258ea0c14059e5aacba830349a"
 dependencies = [
  "clap 4.4.12",
  "convert_case 0.6.0",
@@ -1685,9 +1685,9 @@ dependencies = [
 
 [[package]]
 name = "oca-parser-xls"
-version = "3.0.0-rc.2"
+version = "3.0.0-rc.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "269d29cc9384aeb6036c0a8d51240a599496c3ec733edf76e846cdd655025377"
+checksum = "7067323c5e5364d895dbbc80f678430fcac6fc69d4c0801850ca5340dbb8df8c"
 dependencies = [
  "calamine",
  "clap 3.2.25",
@@ -1725,9 +1725,9 @@ dependencies = [
 
 [[package]]
 name = "oca-rs"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12abaa640693ae66da3a5cc9901fe41401f6d31ba893e17be2d4508fd8d14716"
+checksum = "0901aee3a006b578aa3836d825892a8822410de0a43f6d602c860f9e601ceb0e"
 dependencies = [
  "dyn-clonable",
  "isolang",
