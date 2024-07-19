@@ -74,7 +74,7 @@ jobs:
             - OCA-repository: [ ${{ needs.build.outputs.img-tag }} ](https://${{needs.build.outputs.img-tag}})
 
             ### Changelog
-            ${{ needs.build.changelog.outputs.markdown }}
+            ${{ needs.build.outputs.changelog }}
           removeArtifacts: true
           makeLatest: true
           artifacts: ""
