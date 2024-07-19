@@ -1,4 +1,4 @@
-name: CI
+name: Build docker image
 
 on:
   push:
@@ -48,3 +48,21 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+    outputs:
+      img-tag: ${{ steps.meta.outputs.tags }}
+          
+  release:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          body: |
+            ### Images
+
+            - OCA-repository: [ ${{ needs.build.outputs.img-tag }} ](https://${{needs.build.outputs.img-tag}})
+    
+          removeArtifacts: true
+          artifacts: ""
