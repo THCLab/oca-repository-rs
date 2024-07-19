@@ -1,6 +1,6 @@
 [package]
 name = "oca-repository"
-version = "0.5.5"
+version = "0.5.6"
 edition = "2021"
 license = "EUPL-1.2"
 resolver = "2"

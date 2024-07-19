@@ -2,11 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.6] - 2024-07-19
+
+### ⚙️ Miscellaneous Tasks
+
+- Use proper semver
+
 ## [0.5.5] - 2024-07-19
 
 ### ⚙️ Miscellaneous Tasks
 
 - Set proper img link
+- Release 0.5.5 version
 
 ## [0.5.4] - 2024-07-19
 
