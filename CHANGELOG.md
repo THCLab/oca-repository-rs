@@ -2,11 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.5] - 2024-07-19
+
+### ⚙️ Miscellaneous Tasks
+
+- Set proper img link
+
 ## [0.5.4] - 2024-07-19
 
 ### ⚙️ Miscellaneous Tasks
 
 - Display changelog
+- Release 0.5.4 version
 
 ## [0.5.3] - 2024-07-19
 
