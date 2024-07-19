@@ -2,6 +2,7 @@ version: "3"
 
 services:
   oca_repository:
+    image: ghcr.io/thclab/oca-repository:latest
     container_name: oca_repository
     build: .
     ports:
