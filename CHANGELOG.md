@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.4] - 2024-07-19
+
+### ⚙️ Miscellaneous Tasks
+
+- Display changelog
+
 ## [0.5.3] - 2024-07-19
 
 ### ⚙️ Miscellaneous Tasks
@@ -9,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - Update build.yml
 - Release 0.5.2 version
 - Move extract-changelog before build
+- Release 0.5.3 version
 
 ## [0.5.1] - 2024-07-19
 
