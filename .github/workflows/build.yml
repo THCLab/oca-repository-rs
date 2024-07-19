@@ -47,6 +47,7 @@ jobs:
         uses: sean0x42/markdown-extract@v2
         with:
           file: CHANGELOG.md
+          no-print-matched-heading: true
           pattern: ${{ env.SEMVER }}
 
       - name: Build and push
