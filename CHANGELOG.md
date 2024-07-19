@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### ⚙️ Miscellaneous Tasks
 
 - Update build.yml
+- Release 0.5.1 version
 
 ## [0.5.0] - 2024-07-19
 
