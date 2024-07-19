@@ -49,13 +49,26 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
     outputs:
-      img-tag: ${{ steps.meta.outputs.tags }}
+      img-tag: ${{ steps.meta.outputs.img-tag }}
           
   release:
     runs-on: ubuntu-latest
     needs:
       - build
     steps:
+      - name: Extract release notes from CHANGELOG.md
+        id: extract_changelog
+        run: |
+          # Get the current tag (e.g., v0.5.0)
+          TAG=${GITHUB_REF/refs\/tags\//}
+          # Extract the relevant section from the CHANGELOG.md
+          awk "/## \[$TAG\]/,/^## \[/{if (\$0 ~ /^## \[/ && \$0 !~ \$TAG) exit; print}" CHANGELOG.md > release_notes.md
+          # Remove the first line (which is the heading of the section)
+          sed -i '1d' release_notes.md
+          # Read the content of the release_notes.md file
+          RELEASE_NOTES=$(cat release_notes.md)
+          echo "::set-output name=release_notes::$RELEASE_NOTES"
+        
       - name: Release
         uses: ncipollo/release-action@v1
         with:
@@ -63,6 +76,9 @@ jobs:
             ### Images
 
             - OCA-repository: [ ${{ needs.build.outputs.img-tag }} ](https://${{needs.build.outputs.img-tag}})
-    
+
+            ### Changelog
+            ${{ steps.extract_changelog.outputs.release_notes }}
           removeArtifacts: true
+          makeLatest: true
           artifacts: ""
