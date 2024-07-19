@@ -2,11 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.8] - 2024-07-19
+
+### 🐛 Bug Fixes
+
+- Serialization of GET /oca-bundles response to include bundle version
+
 ## [0.5.7] - 2024-07-19
 
 ### ⚙️ Miscellaneous Tasks
 
 - Set no-print-matched-heading
+- Release 0.5.7 version
 
 ## [0.5.6] - 2024-07-19
 
