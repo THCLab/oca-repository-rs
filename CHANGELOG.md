@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1] - 2024-07-19
+
+### ⚙️ Miscellaneous Tasks
+
+- Update build.yml
+
 ## [0.5.0] - 2024-07-19
 
 ### ⚙️ Miscellaneous Tasks
@@ -9,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - Update readme and docker-compose
 - Add release.toml
 - Add changelog
+- Release 0.5.0 version
 
 ## [0.5.0-rc.8] - 2024-07-19
 
