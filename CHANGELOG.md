@@ -2,11 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.7] - 2024-07-19
+
+### ⚙️ Miscellaneous Tasks
+
+- Set no-print-matched-heading
+
 ## [0.5.6] - 2024-07-19
 
 ### ⚙️ Miscellaneous Tasks
 
 - Use proper semver
+- Release 0.5.6 version
 
 ## [0.5.5] - 2024-07-19
 
