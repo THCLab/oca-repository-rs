@@ -57,7 +57,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
     outputs:
-      img-tag: ${{ steps.meta.outputs.img-tag }}
+      img-tag: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
       changelog: ${{ steps.extract-changelog.outputs.markdown }}
 
   release:
