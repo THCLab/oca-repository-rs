@@ -140,8 +140,24 @@ pub async fn get_oca_bundle(
         .unwrap_or_else(|e| e.into_inner())
         .get_oca_bundle(said, with_dependencies)
     {
-        Ok(oca_bundle) => serde_json::to_string_pretty(&oca_bundle)
-            .expect("Failed to serialize oca_bundle"),
+        Ok(oca_bundle) => serde_json::to_string(
+            &serde_json::json!({
+                "bundle":
+                    serde_json::from_str::<serde_json::Value>(
+                        &String::from_utf8(
+                            oca_bundle.bundle.encode().unwrap()
+                        ).unwrap()
+                    ).unwrap(),
+                "dependencies": oca_bundle.dependencies.iter().map(|d| {
+                    serde_json::from_str::<serde_json::Value>(
+                        &String::from_utf8(
+                            d.encode().unwrap()
+                        ).unwrap()
+                    ).unwrap()
+                }).collect::<Vec<serde_json::Value>>(),
+            })
+        )
+        .expect("Failed to serialize oca_bundle"),
         Err(errors) => serde_json::to_string(&serde_json::json!({
             "success": false,
             "errors": errors,
