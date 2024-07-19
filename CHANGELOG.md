@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2024-07-19
+
+### ⚙️ Miscellaneous Tasks
+
+- Update readme and docker-compose
+- Add release.toml
+- Add changelog
+
 ## [0.5.0-rc.8] - 2024-07-19
 
 ### ⚙️ Miscellaneous Tasks
@@ -139,7 +147,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bug Fixes
 
-- _(openapi.yml)_ Move `extend` query param from /.../ocafile endpoint to /.../steps
+- *(openapi.yml)* Move `extend` query param from /.../ocafile endpoint to /.../steps
 
 ## [0.4.7] - 2023-08-18
 
@@ -157,7 +165,7 @@ All notable changes to this project will be documented in this file.
 
 ### ⚙️ Miscellaneous Tasks
 
-- _(Cargo.toml)_ Update oca-rs dependency to version 0.3.0-rc.8
+- *(Cargo.toml)* Update oca-rs dependency to version 0.3.0-rc.8
 
 ## [0.4.4] - 2023-07-14
 
@@ -187,7 +195,7 @@ All notable changes to this project will be documented in this file.
 
 - Apply clippy suggestions
 - Update docker image name
-- Update said and oca-\* versions
+- Update said and oca-* versions
 
 ## [0.1.0] - 2023-07-03
 
