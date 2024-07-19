@@ -17,6 +17,7 @@ RUN cargo build --release --features data_entries_xls
 
 FROM debian:bookworm-slim AS runtime
 WORKDIR /app
+LABEL org.opencontainers.image.description="The OCA repository is a key concept of the OCA Ecosystem. It enables the management, storage, and sharing of OCA Objects like OCA Bundles, Capture Bases, and Overlays. Furthermore, it comes with pre-baked support for OCAFiles. The interface is exposed through REST API"
 RUN     apt-get update --quiet \
         && apt-get install -y tini openssl sqlite3
 COPY --from=builder /app/target/release/oca-repository /usr/local/bin
