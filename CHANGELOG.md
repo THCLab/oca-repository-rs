@@ -2,11 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.9] - 2024-07-22
+
+### ⚙️ Miscellaneous Tasks
+
+- Update README.md
+- Auto bump README docker img version
+
 ## [0.5.8] - 2024-07-19
 
 ### 🐛 Bug Fixes
 
 - Serialization of GET /oca-bundles response to include bundle version
+
+### ⚙️ Miscellaneous Tasks
+
+- Release 0.5.8 version
 
 ## [0.5.7] - 2024-07-19
 

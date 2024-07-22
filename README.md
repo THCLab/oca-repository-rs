@@ -5,7 +5,7 @@
 1. Pull the Docker image for OCA Repository
 
 ```
-docker pull ghcr.io/thclab/oca-repository:latest
+docker pull ghcr.io/thclab/oca-repository:0.5.9
 ```
 
 2. Run an instance of OCA Repository
@@ -16,7 +16,7 @@ docker run
     --rm
     -p 8000:8000
     -v $PWD/config/config.yml:/app/config/config.yml:ro
-    humancolossus/oca-repository:latest
+    humancolossus/oca-repository:0.5.9
 ```
 
 ## Usage
