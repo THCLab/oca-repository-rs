@@ -3,3 +3,6 @@ shared-version=true
 tag-name="v{{version}}"
 pre-release-hook = ["git", "cliff", "-o", "CHANGELOG.md", "--tag", "{{version}}" ]
 pre-release-commit-message="chore: release {{version}} version"
+pre-release-replacements = [
+  {file="README.md", search="oca-repository\\:.*", replace="{{crate_name}}:{{version}}"},
+]
