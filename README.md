@@ -1,6 +1,6 @@
 # OCA Repository
 
-## Usage
+## Installation
 
 1. Pull the Docker image for OCA Repository
 ```
@@ -18,12 +18,11 @@ docker run
     humancolossus/oca-repository:latest
 ```
 
-3. See the [`openapi.yml`](https://github.com/THCLab/oca-repository-rs/blob/main/openapi.yml) spec under the `OCA Repository` tag for all available endpoints.
 
+## Usage
 
-## Core components
+See https://oca.colossi.network/ecosystem/oca-repository.html
 
-...
 
 ## Development
 
