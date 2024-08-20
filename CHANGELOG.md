@@ -2,12 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.10] - 2024-08-20
+
+### 🐛 Bug Fixes
+
+- Time package version
+
+### ⚙️ Miscellaneous Tasks
+
+- Update said package to 0.4.1 and oca-rs package to 0.5.4
+- Fix release.toml
+
 ## [0.5.9] - 2024-07-22
 
 ### ⚙️ Miscellaneous Tasks
 
 - Update README.md
 - Auto bump README docker img version
+- Release 0.5.9 version
 
 ## [0.5.8] - 2024-07-19
 
