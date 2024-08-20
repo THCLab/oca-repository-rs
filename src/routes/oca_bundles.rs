@@ -1,5 +1,5 @@
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use oca_rs::EncodeBundle;
+use oca_rs::{EncodeBundle, HashFunctionCode, SerializationFormats, facade::bundle::BundleElement};
 use said::SelfAddressingIdentifier;
 use serde::{Deserialize, Serialize};
 use std::{str::FromStr, sync::Mutex};
@@ -31,10 +31,18 @@ pub async fn add_oca_file(
         .build_from_ocafile(ocafile)
     {
         Ok(oca_bundle) => {
-            serde_json::json!({
-                "success": true,
-                "said": oca_bundle.said.unwrap(),
-            })
+            match oca_bundle {
+                BundleElement::Mechanics(mechanics) => {
+                    serde_json::json!({
+                        "success": true,
+                        "said": mechanics.said.unwrap(),
+                    })
+                }
+                _ =>
+                    serde_json::json!({
+                        "success": false,
+                    })
+            }
         }
         Err(errors) => {
             serde_json::json!({
@@ -62,6 +70,8 @@ pub async fn search(
     query_params: web::Query<SearchParams>,
 ) -> HttpResponse {
     let limit = 10;
+    let code = HashFunctionCode::Blake3_256;
+    let format = SerializationFormats::JSON;
 
     let language = if query_params.lang.is_none() {
         isolang::Language::from_str(
@@ -94,7 +104,7 @@ pub async fn search(
                 "oca_bundle":
                     serde_json::from_str::<serde_json::Value>(
                         &String::from_utf8(
-                            r.oca_bundle.encode().unwrap()
+                            r.oca_bundle.encode(&code, &format).unwrap()
                         ).unwrap()
                     ).unwrap(),
                 "metadata": r.metadata,
@@ -118,6 +128,8 @@ pub async fn get_oca_bundle(
     query_params: web::Query<OCABundleQueryParams>,
 ) -> HttpResponse {
     let said_str = req.match_info().get("said").unwrap().to_string();
+    let code = HashFunctionCode::Blake3_256;
+    let format = SerializationFormats::JSON;
     let said = match SelfAddressingIdentifier::from_str(&said_str) {
         Ok(said) => said,
         Err(e) => {
@@ -145,13 +157,13 @@ pub async fn get_oca_bundle(
                 "bundle":
                     serde_json::from_str::<serde_json::Value>(
                         &String::from_utf8(
-                            oca_bundle.bundle.encode().unwrap()
+                            oca_bundle.bundle.encode(&code, &format).unwrap()
                         ).unwrap()
                     ).unwrap(),
                 "dependencies": oca_bundle.dependencies.iter().map(|d| {
                     serde_json::from_str::<serde_json::Value>(
                         &String::from_utf8(
-                            d.encode().unwrap()
+                            d.encode(&code, &format).unwrap()
                         ).unwrap()
                     ).unwrap()
                 }).collect::<Vec<serde_json::Value>>(),
@@ -312,7 +324,7 @@ pub async fn get_oca_data_entry(
         })?;
     let oca_bundle_list = vec![oca_bundle.bundle.clone()];
     let _ = oca_parser_xls::xls_parser::data_entry::generate(
-        &oca_bundle_list,
+        oca_bundle_list.as_slice(),
         format!(
             "{}/{}",
             data_entries_path.clone(),

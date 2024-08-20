@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 
 use actix_web::{http::header::ContentType, web, HttpResponse};
-use oca_rs::EncodeBundle;
+use oca_rs::{EncodeBundle, HashFunctionCode, SerializationFormats};
 
 #[derive(serde::Deserialize)]
 pub struct FetchAllOCABundleParams {
@@ -13,6 +13,9 @@ pub async fn fetch_all_oca_bundle(
     query_params: web::Query<FetchAllOCABundleParams>,
 ) -> HttpResponse {
     let page = query_params.page.unwrap_or(1);
+    let code = HashFunctionCode::Blake3_256;
+    let format = SerializationFormats::JSON;
+
     let result = match oca_facade
         .lock()
         .unwrap_or_else(|e| e.into_inner())
@@ -25,7 +28,7 @@ pub async fn fetch_all_oca_bundle(
                     all_oca_bundles.records.iter().map(|oca_bundle| {
                         serde_json::from_str(
                             &String::from_utf8(
-                                oca_bundle.encode().unwrap()
+                                oca_bundle.encode(&code, &format).unwrap()
                             ).unwrap()
                         ).unwrap()
                     }).collect::<Vec<serde_json::Value>>(),

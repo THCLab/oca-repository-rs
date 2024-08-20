@@ -22,12 +22,11 @@ config = "0.13.2"
 dyn-clonable = "0.9.0"
 indexmap = { version = "1.9.3", features = ["serde"] }
 isolang = "2.3.0"
-oca-parser-xls = { version = "3.0.0-rc.3", optional = true }
-oca-rs = { version = "0.4.5" }
+oca-parser-xls = { version = "3.0.0-rc.5", optional = true }
+oca-rs = { version = "0.5.4" }
 rusqlite = "0.29.0"
 serde = { version = "1.0", features = ["derive"] }
 serde-value = "0.7.0"
 serde_json = "1.0"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
-said = { version = "0.3.0", features = ["macros"] }
-
+said = { version = "0.4.1", features = ["macros"] }
