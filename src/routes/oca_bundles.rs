@@ -222,7 +222,7 @@ pub async fn get_oca_file_history(
         .get_oca_bundle_steps(said)
     {
         Ok(oca_build_steps) => serde_json::to_value(
-            &oca_build_steps
+            oca_build_steps
                 .iter()
                 .map(|s| {
                     serde_json::to_value(&Item {
