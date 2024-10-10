@@ -11,3 +11,6 @@ cache_storage:
 
 search_engine:
   path: "./db_search"
+
+ocafiles_cache:
+  path: "./oca_repo_cache"

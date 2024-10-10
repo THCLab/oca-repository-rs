@@ -39,6 +39,7 @@ pub fn run(
     data_storage: Box<dyn DataStorage + Send + Sync>,
     filesystem_storage: Box<dyn DataStorage + Send + Sync>,
     cache_storage_config: SQLiteConfig,
+    ocafiles_cache: OCAFilesCache,
 ) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);
@@ -51,8 +52,7 @@ pub fn run(
                 cache_storage_config.clone(),
             )),
 
-            cache: OCAFilesCache::new(cache_path)//.unwrap_or(&PathBuf::from("./ocafiles_cache")))
-                .unwrap(),
+            cache: ocafiles_cache.clone(),
         };
         #[allow(clippy::arc_with_non_send_sync)]
         let facade_arc = Arc::new(state);

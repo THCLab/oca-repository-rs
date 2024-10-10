@@ -6,6 +6,7 @@ use said::SelfAddressingIdentifier;
 use sha2::{Digest, Sha256};
 
 
+#[derive(Clone)]
 pub struct OCAFilesCache {
     store: Store,
 }

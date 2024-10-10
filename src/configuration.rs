@@ -4,6 +4,7 @@ pub struct Settings {
     pub database: DatabaseSettings,
     pub cache_storage: CacheStorageSettings,
     pub search_engine: SearchEngineSettings,
+    pub ocafiles_cache: OCFilesCacheSettings,
 }
 
 #[derive(serde::Deserialize)]
@@ -20,6 +21,11 @@ pub struct DatabaseSettings {
 
 #[derive(serde::Deserialize)]
 pub struct CacheStorageSettings {
+    pub path: String,
+}
+
+#[derive(serde::Deserialize)]
+pub struct OCFilesCacheSettings {
     pub path: String,
 }
 

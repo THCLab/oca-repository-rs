@@ -29,13 +29,15 @@ async fn main() -> std::io::Result<()> {
                 .unwrap(),
         ),
     );
+    let ocafiles_cache_path = std::path::PathBuf::from(configuration.ocafiles_cache.path);
     /* let meilisearch_client = Box::new(Client::new(
         &configuration.search_engine.url,
         &configuration.search_engine.api_key,
     )); */
     let cache_db_path = std::path::PathBuf::from(configuration.search_engine.path);
     let cache_storage_config = SQLiteConfig::build().path(cache_db_path).unwrap();
+    let ocafiles_cache = oca_repository::cache::OCAFilesCache::new(ocafiles_cache_path).unwrap();
 
-    run(listener, sled_db, filesystem_storage, cache_storage_config)?.await?;
+    run(listener, sled_db, filesystem_storage, cache_storage_config, ocafiles_cache)?.await?;
     Ok(())
 }
