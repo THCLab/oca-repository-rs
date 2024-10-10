@@ -19,7 +19,6 @@ pub async fn add_oca_file(
                 .body(serde_json::to_string(&vec![e.to_string()]).unwrap())
         }
     };
-    // println!("Got ocafile: {}", &ocafile);
     if ocafile.is_empty() {
         let error = "OCA File can't be empty";
         return HttpResponse::UnprocessableEntity()
@@ -29,14 +28,12 @@ pub async fn add_oca_file(
     let cached = app_state.cache.get(&ocafile);
     let result = match cached {
         Ok(Some(cached_said)) => {
-            println!("Getting from cache: {}", &cached_said);
             serde_json::json!({
                 "success": true,
                 "said": cached_said,
             })
         }
         Ok(None) => {
-            println!("New ocafile. Need to rebuild");
             let built_result = {
                app_state
                     .facade
@@ -50,8 +47,6 @@ pub async fn add_oca_file(
                 Ok(oca_bundle) => match oca_bundle {
                     BundleElement::Mechanics(mechanics) => {
                         let said = mechanics.said.clone();
-                        // println!("Rebuilt successfully: {:?}", &said);
-                        // println!("Saving to cache: {}", &said.as_ref().unwrap());
                         if let Err(e) = app_state.cache.insert(&ocafile, mechanics.said.unwrap()) {
                             return HttpResponse::InternalServerError()
                                 .content_type(ContentType::json())

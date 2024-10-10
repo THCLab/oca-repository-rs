@@ -4,7 +4,6 @@ use oca_rs::Facade;
 use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
 // use crate::routes::namespaces;
 use crate::routes::{explore, internal, objects, oca_bundles};
-use std::path::Path;
 use std::sync::{Arc, Mutex};
 
 use actix_web::dev::Server;
@@ -43,8 +42,6 @@ pub fn run(
 ) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);
-        let cache_path = Path::new("./repo_cache");
-        println!("Creating cache in {:?}", cache_path.to_str());
         let state = AppState {
             facade: Mutex::new(oca_rs::Facade::new(
                 data_storage.clone(),
