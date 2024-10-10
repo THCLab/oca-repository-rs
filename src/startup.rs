@@ -1,8 +1,11 @@
+use crate::cache::OCAFilesCache;
 use crate::routes::health_check;
+use oca_rs::Facade;
 use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
 // use crate::routes::namespaces;
 use crate::routes::{explore, internal, objects, oca_bundles};
-use std::sync::Arc;
+use std::path::Path;
+use std::sync::{Arc, Mutex};
 
 use actix_web::dev::Server;
 use actix_web::{web, App, HttpServer};
@@ -26,6 +29,11 @@ use std::net::TcpListener;
     Ok(req)
 } */
 
+pub struct AppState {
+    pub facade: Mutex<Facade>,
+    pub cache: OCAFilesCache,
+}
+
 pub fn run(
     listener: TcpListener,
     data_storage: Box<dyn DataStorage + Send + Sync>,
@@ -34,12 +42,20 @@ pub fn run(
 ) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);
+        let cache_path = Path::new("./repo_cache");
+        println!("Creating cache in {:?}", cache_path.to_str());
+        let state = AppState {
+            facade: Mutex::new(oca_rs::Facade::new(
+                data_storage.clone(),
+                filesystem_storage.clone(),
+                cache_storage_config.clone(),
+            )),
+
+            cache: OCAFilesCache::new(cache_path)//.unwrap_or(&PathBuf::from("./ocafiles_cache")))
+                .unwrap(),
+        };
         #[allow(clippy::arc_with_non_send_sync)]
-        let facade_arc = Arc::new(std::sync::Mutex::new(oca_rs::Facade::new(
-            data_storage.clone(),
-            filesystem_storage.clone(),
-            cache_storage_config.clone(),
-        )));
+        let facade_arc = Arc::new(state);
         let oca_bundles_scope = web::scope("/oca-bundles")
             .route("", web::post().to(oca_bundles::add_oca_file))
             .route("/search", web::get().to(oca_bundles::search))
@@ -68,13 +84,9 @@ pub fn run(
                     )
             ) */
             .service(oca_bundles_scope)
+            .service(web::scope("/objects").route("", web::get().to(objects::fetch_objects)))
             .service(
-                web::scope("/objects")
-                    .route("", web::get().to(objects::fetch_objects)),
-            )
-            .service(
-                web::scope("/explore")
-                    .route("/{said}", web::get().to(explore::fetch_relations)),
+                web::scope("/explore").route("/{said}", web::get().to(explore::fetch_relations)),
             )
             .service(
                 web::scope("/internal")

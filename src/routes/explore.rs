@@ -1,14 +1,12 @@
-use std::sync::Mutex;
-
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 
-pub async fn fetch_relations(
-    oca_facade: web::Data<Mutex<oca_rs::Facade>>,
-    req: HttpRequest,
-) -> HttpResponse {
+use crate::startup::AppState;
+
+pub async fn fetch_relations(app_state: web::Data<AppState>, req: HttpRequest) -> HttpResponse {
     let said = req.match_info().get("said").unwrap().to_string();
 
-    let result = match oca_facade
+    let result = match app_state
+        .facade
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .explore(said)

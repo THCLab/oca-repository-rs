@@ -1,7 +1,7 @@
-use std::sync::Mutex;
-
 use actix_web::{http::header::ContentType, web, HttpResponse};
 use oca_rs::{EncodeBundle, HashFunctionCode, SerializationFormats};
+
+use crate::startup::AppState;
 
 #[derive(serde::Deserialize)]
 pub struct FetchAllOCABundleParams {
@@ -9,14 +9,15 @@ pub struct FetchAllOCABundleParams {
 }
 
 pub async fn fetch_all_oca_bundle(
-    oca_facade: web::Data<Mutex<oca_rs::Facade>>,
+    app_state: web::Data<AppState>,
     query_params: web::Query<FetchAllOCABundleParams>,
 ) -> HttpResponse {
     let page = query_params.page.unwrap_or(1);
     let code = HashFunctionCode::Blake3_256;
     let format = SerializationFormats::JSON;
 
-    let result = match oca_facade
+    let result = match app_state
+        .facade
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .fetch_all_oca_bundle(100, page)
@@ -54,11 +55,12 @@ pub struct FetchAllCaptureBaseParams {
 }
 
 pub async fn fetch_all_capture_base(
-    oca_facade: web::Data<Mutex<oca_rs::Facade>>,
+    app_state: web::Data<AppState>,
     query_params: web::Query<FetchAllCaptureBaseParams>,
 ) -> HttpResponse {
     let page = query_params.page.unwrap_or(1);
-    let result = match oca_facade
+    let result = match app_state
+        .facade
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .fetch_all_capture_base(100, page)

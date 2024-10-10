@@ -1,7 +1,7 @@
-use std::sync::Mutex;
-
 use actix_web::{http::header::ContentType, web, HttpResponse};
 use serde::Deserialize;
+
+use crate::startup::AppState;
 
 #[derive(Deserialize)]
 pub struct FetchObjectsParams {
@@ -9,7 +9,7 @@ pub struct FetchObjectsParams {
 }
 
 pub async fn fetch_objects(
-    oca_facade: web::Data<Mutex<oca_rs::Facade>>,
+    app_state: web::Data<AppState>,
     query_params: web::Query<FetchObjectsParams>,
 ) -> HttpResponse {
     let saids: Vec<String> = query_params
@@ -18,7 +18,8 @@ pub async fn fetch_objects(
         .map(|s| s.to_string())
         .collect();
 
-    let result = match oca_facade
+    let result = match app_state
+        .facade
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .get_oca_objects(saids)
