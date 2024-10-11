@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2024-10-11
+
+### 🚀 Features
+
+- Cache built ocafiles
+- Allow setting cache path in config file
+
+### 🚜 Refactor
+
+- Fix clippy warnings
+- Remove unused code
+
 ## [0.5.10] - 2024-08-20
 
 ### 🐛 Bug Fixes
@@ -12,6 +24,7 @@ All notable changes to this project will be documented in this file.
 
 - Update said package to 0.4.1 and oca-rs package to 0.5.4
 - Fix release.toml
+- Release 0.5.10 version
 
 ## [0.5.9] - 2024-07-22
 
