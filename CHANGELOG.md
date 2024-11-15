@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0] - 2024-11-15
+
+### 🚀 Features
+
+- Add version to OCA Bundle
+
+### ⚙️ Miscellaneous Tasks
+
+- [**breaking**] Update oca-rs package to 0.6.0
+
 ## [0.6.0] - 2024-10-11
 
 ### 🚀 Features
@@ -13,6 +23,10 @@ All notable changes to this project will be documented in this file.
 
 - Fix clippy warnings
 - Remove unused code
+
+### ⚙️ Miscellaneous Tasks
+
+- Release 0.6.0 version
 
 ## [0.5.10] - 2024-08-20
 
