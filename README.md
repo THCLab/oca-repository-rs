@@ -2,21 +2,38 @@
 
 ## Installation
 
-1. Pull the Docker image for OCA Repository
+1. Pull the Docker image for OCA Repository (be aware to NOT use `latest` tag for production deployment)
 
 ```
-docker pull ghcr.io/thclab/oca-repository:0.7.0
+docker pull ghcr.io/thclab/oca-repository:latest
+```
+2. Customize config file
+
+config.yml:
+
+```
+application:
+  host: 0.0.0.0
+  port: 8000
+  data_entries_path: "/tmp"
+
+database:
+  path: "./db"
+
+cache_storage:
+  path: "./cache"
+
+search_engine:
+  path: "./db_search"
+
+ocafiles_cache:
+  path: "./oca_repo_cache"
 ```
 
 2. Run an instance of OCA Repository
 
 ```
-docker run
-    -it
-    --rm
-    -p 8000:8000
-    -v $PWD/config/config.yml:/app/config/config.yml:ro
-    humancolossus/oca-repository:0.7.0
+docker run -it --rm -p 8000:8000 -v $PWD/config.yml:/app/config/config.yml:ro ghcr.io/thclab/oca-repository:latest
 ```
 
 ## Usage
