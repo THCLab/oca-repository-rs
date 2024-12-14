@@ -72,6 +72,8 @@ curl -XPOST http://127.0.0.1:8000/oca-bundles \
   --data-binary @ocafile.txt
 ```
 
+If you need examples of OCA for development and testing check: https://github.com/thclab/ocafile-examples
+
 Get OCA Bundle:
 
 ```
