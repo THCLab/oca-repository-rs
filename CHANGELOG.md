@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.1] - 2025-01-28
+
+### ⚙️ Miscellaneous Tasks
+
+- [**breaking**] Update oca package to v0.6.10
+
 ## [0.7.0] - 2024-11-15
 
 ### 🚀 Features
@@ -11,6 +17,7 @@ All notable changes to this project will be documented in this file.
 ### ⚙️ Miscellaneous Tasks
 
 - [**breaking**] Update oca-rs package to 0.6.0
+- Release 0.7.0 version
 
 ## [0.6.0] - 2024-10-11
 
@@ -154,7 +161,7 @@ All notable changes to this project will be documented in this file.
 - Add support for bundle deps
 - Bump to oca-rs 0.4.1-rc.1
 
-### Release
+### 💼 Other
 
 - Bump to 0.5.0
 
