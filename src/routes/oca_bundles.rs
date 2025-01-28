@@ -1,7 +1,7 @@
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 // use cached::IOCached;
 use crate::startup::AppState;
-use oca_rs::{facade::bundle::BundleElement, EncodeBundle, HashFunctionCode, SerializationFormats};
+use oca_rs::{EncodeBundle, HashFunctionCode, SerializationFormats};
 use said::SelfAddressingIdentifier;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
@@ -44,22 +44,17 @@ pub async fn add_oca_file(
             
             match built_result
             {
-                Ok(oca_bundle) => match oca_bundle {
-                    BundleElement::Mechanics(mechanics) => {
-                        let said = mechanics.said.clone();
-                        if let Err(e) = app_state.cache.insert(&ocafile, mechanics.said.unwrap()) {
-                            return HttpResponse::InternalServerError()
-                                .content_type(ContentType::json())
-                                .body(e.to_string());
-                        };
-                        serde_json::json!({
-                            "success": true,
-                            "said": said.unwrap(),
-                        })
-                    }
-                    _ => serde_json::json!({
-                        "success": false,
-                    }),
+                Ok(oca_bundle) => {
+                    let said = oca_bundle.said.clone();
+                    if let Err(e) = app_state.cache.insert(&ocafile, oca_bundle.said.unwrap()) {
+                        return HttpResponse::InternalServerError()
+                            .content_type(ContentType::json())
+                            .body(e.to_string());
+                    };
+                    serde_json::json!({
+                        "success": true,
+                        "said": said.unwrap(),
+                    })
                 },
                 Err(errors) => {
                     serde_json::json!({
