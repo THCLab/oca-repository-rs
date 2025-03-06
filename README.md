@@ -5,7 +5,7 @@
 1. Pull the Docker image for OCA Repository (be aware to NOT use `latest` tag for production deployment)
 
 ```
-docker pull ghcr.io/thclab/oca-repository:0.7.1
+docker pull ghcr.io/thclab/oca-repository:0.8.0
 ```
 2. Customize config file
 
@@ -33,7 +33,7 @@ ocafiles_cache:
 2. Run an instance of OCA Repository
 
 ```
-docker run -it --rm -p 8000:8000 -v $PWD/config.yml:/app/config/config.yml:ro ghcr.io/thclab/oca-repository:0.7.1
+docker run -it --rm -p 8000:8000 -v $PWD/config.yml:/app/config/config.yml:ro ghcr.io/thclab/oca-repository:0.8.0
 ```
 
 ## Usage

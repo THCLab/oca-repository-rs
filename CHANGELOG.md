@@ -2,11 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.0] - 2025-03-06
+
+### ⚙️ Miscellaneous Tasks
+
+- [**breaking**] Update oca package to 0.7.1
+
 ## [0.7.1] - 2025-01-28
 
 ### ⚙️ Miscellaneous Tasks
 
 - [**breaking**] Update oca package to v0.6.10
+- Release 0.7.1 version
 
 ## [0.7.0] - 2024-11-15
 
