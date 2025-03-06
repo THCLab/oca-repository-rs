@@ -1642,14 +1642,15 @@ dependencies = [
 
 [[package]]
 name = "oca-ast-semantics"
-version = "0.6.10"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85d283b37a6bd26c558c87af88bd636b5bafd11640fde822e58265d9a9548eca"
+checksum = "3774fec44eb550f6d49061b5c3511fbce8acc1063b4871130424b08e3034564f"
 dependencies = [
  "env_logger",
  "indexmap 1.9.3",
  "log",
  "recursion",
+ "regex",
  "said 0.4.1",
  "serde",
  "serde-wasm-bindgen",
@@ -1662,9 +1663,9 @@ dependencies = [
 
 [[package]]
 name = "oca-ast-transformation"
-version = "0.6.10"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "01e42f577e6a571a0299036bab60a411b5d9eb83272100041290a4094909afea"
+checksum = "e2aa5e0925a774935b6d7cc85c2421b995687493d8326c071c93bbd09a87bfd7"
 dependencies = [
  "env_logger",
  "indexmap 1.9.3",
@@ -1682,9 +1683,9 @@ dependencies = [
 
 [[package]]
 name = "oca-bundle-semantics"
-version = "0.6.10"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28bacef21d96acd8e02524748637b40ea93009a4d8424596f0dc8d0f52aa585a"
+checksum = "9756f0c176f4345af1f9b4a157cc46cc50867f2cf0b865dfd360daedce0b9256"
 dependencies = [
  "cascade",
  "convert_case 0.6.0",
@@ -1711,9 +1712,9 @@ dependencies = [
 
 [[package]]
 name = "oca-dag-semantics"
-version = "0.6.10"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3b07b2330e5dbd6fd6c463935bdeb075e060e662b04042a834b8c4b6dc1d2a25"
+checksum = "f671d5b4e7afbb6ec5b7880fa3eab5d426f82a71681f73122ab69aa21458aa16"
 dependencies = [
  "dyn-clonable",
  "indexmap 1.9.3",
@@ -1728,9 +1729,9 @@ dependencies = [
 
 [[package]]
 name = "oca-file"
-version = "0.6.10"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4100e4a31ddd9466225e4ffe86a6263ca3e25f053380f6dee7d72c96aa752c96"
+checksum = "b16f341b9e1c27d12ea84ba215619664e1d981357f177fff77c8321f22d8ed5c"
 dependencies = [
  "clap 4.5.19",
  "convert_case 0.6.0",
@@ -1752,9 +1753,9 @@ dependencies = [
 
 [[package]]
 name = "oca-file-semantics"
-version = "0.6.10"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c03f16508754998b2c010d7f540af55ab7663f73acc8916bfbeb805f0dfd55d2"
+checksum = "61323a5e474f3cd2ea40b9dee8a304a831bdf8cfcf7e58a823e18814113bf1f8"
 dependencies = [
  "clap 4.5.19",
  "convert_case 0.6.0",
@@ -1775,9 +1776,9 @@ dependencies = [
 
 [[package]]
 name = "oca-file-transformation"
-version = "0.6.10"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7cfc4a4e41667c53fd317d3e115fb9281c898003481dec149038d3180eaef1d0"
+checksum = "61eb12dd03797cb8e3af4a21d4ffa5b087d472a1ae3ebf20ba5df15414db0698"
 dependencies = [
  "clap 4.5.19",
  "convert_case 0.6.0",
@@ -1798,9 +1799,9 @@ dependencies = [
 
 [[package]]
 name = "oca-parser-xls"
-version = "3.0.0-rc.8"
+version = "3.0.0-rc.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22cdeead67d541a799df8ac43458637b41aa4d879de4a30b5ade604c8cf3c2e8"
+checksum = "71e7e03c239729588fae1682613b9ef903c95ff2d5c03b025fbab261946fde78"
 dependencies = [
  "calamine",
  "clap 3.2.25",
@@ -1842,9 +1843,9 @@ dependencies = [
 
 [[package]]
 name = "oca-rs"
-version = "0.6.10"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74c400d18d064eaee5a1ed03c205ee2ee471c6943ce50a9f343253bf3e24f491"
+checksum = "0f0f9324439f56dce0bc1391a6e9127b89eedc79f3abced0410c3d507faf783f"
 dependencies = [
  "dyn-clonable",
  "isolang",
@@ -2817,9 +2818,9 @@ dependencies = [
 
 [[package]]
 name = "transformation-file"
-version = "0.6.10"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ac064bf2e9157ec2c3b6c6f8bd6eb738e0c9e759cdaaad9b3f9d43b0650ec18"
+checksum = "380ffb81acf702fe00372e481139adbc309a756b3b8bd8143598a965a87f4e6d"
 dependencies = [
  "indexmap 1.9.3",
  "oca-ast-transformation",
