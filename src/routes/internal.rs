@@ -6,6 +6,7 @@ use crate::startup::AppState;
 #[derive(serde::Deserialize)]
 pub struct FetchAllOCABundleParams {
     page: Option<usize>,
+    limit: Option<usize>,
 }
 
 pub async fn fetch_all_oca_bundle(
@@ -13,6 +14,7 @@ pub async fn fetch_all_oca_bundle(
     query_params: web::Query<FetchAllOCABundleParams>,
 ) -> HttpResponse {
     let page = query_params.page.unwrap_or(1);
+    let limit = query_params.limit.unwrap_or(100);
     let code = HashFunctionCode::Blake3_256;
     let format = SerializationFormats::JSON;
 
@@ -20,7 +22,7 @@ pub async fn fetch_all_oca_bundle(
         .facade
         .lock()
         .unwrap_or_else(|e| e.into_inner())
-        .fetch_all_oca_bundle(100, page)
+        .fetch_all_oca_bundle(limit, page)
     {
         Ok(all_oca_bundles) => {
             serde_json::json!({
@@ -52,6 +54,7 @@ pub async fn fetch_all_oca_bundle(
 #[derive(serde::Deserialize)]
 pub struct FetchAllCaptureBaseParams {
     page: Option<usize>,
+    limit: Option<usize>,
 }
 
 pub async fn fetch_all_capture_base(
@@ -59,11 +62,12 @@ pub async fn fetch_all_capture_base(
     query_params: web::Query<FetchAllCaptureBaseParams>,
 ) -> HttpResponse {
     let page = query_params.page.unwrap_or(1);
+    let limit = query_params.limit.unwrap_or(100);
     let result = match app_state
         .facade
         .lock()
         .unwrap_or_else(|e| e.into_inner())
-        .fetch_all_capture_base(100, page)
+        .fetch_all_capture_base(limit, page)
     {
         Ok(all_capture_bases) => {
             serde_json::json!({
