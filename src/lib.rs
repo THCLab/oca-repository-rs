@@ -4,3 +4,4 @@ pub mod configuration;
 pub mod cache;
 pub mod routes;
 pub mod startup;
+pub mod logging;

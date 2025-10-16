@@ -1,7 +1,7 @@
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 // use cached::IOCached;
 use crate::startup::AppState;
-use oca_rs::{EncodeBundle, HashFunctionCode, SerializationFormats};
+use oca_sdk_rs::overlay_registry::OverlayLocalRegistry;
 use said::SelfAddressingIdentifier;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
@@ -26,6 +26,17 @@ pub async fn add_oca_file(
             .body(serde_json::to_string(&vec![error]).unwrap());
     }
     let cached = app_state.cache.get(&ocafile);
+
+
+    let overlay_registry = match OverlayLocalRegistry::from_dir("test/assets/overlay-file/") {
+        Ok(registry) => registry,
+        Err(e) => {
+            return HttpResponse::InternalServerError()
+            .content_type(ContentType::json())
+           .body(e.to_string());
+        }
+    };
+
     let result = match cached {
         Ok(Some(cached_said)) => {
             serde_json::json!({
@@ -39,14 +50,14 @@ pub async fn add_oca_file(
                     .facade
                     .lock()
                     .unwrap_or_else(|e| e.into_inner())
-                    .build_from_ocafile(ocafile.clone())
+                    .build_from_ocafile(ocafile.clone(), overlay_registry)
             };
-            
+
             match built_result
             {
                 Ok(oca_bundle) => {
-                    let said = oca_bundle.said.clone();
-                    if let Err(e) = app_state.cache.insert(&ocafile, oca_bundle.said.unwrap()) {
+                    let said = oca_bundle.digest.clone();
+                    if let Err(e) = app_state.cache.insert(&ocafile, oca_bundle.digest.unwrap()) {
                         return HttpResponse::InternalServerError()
                             .content_type(ContentType::json())
                             .body(e.to_string());
@@ -71,7 +82,7 @@ pub async fn add_oca_file(
                 .body(e.to_string())
         }
     };
-    
+
     HttpResponse::Ok()
         .content_type(ContentType::json())
         .body(serde_json::to_string(&result).unwrap())
@@ -90,8 +101,6 @@ pub async fn search(
     query_params: web::Query<SearchParams>,
 ) -> HttpResponse {
     let limit = 10;
-    let code = HashFunctionCode::Blake3_256;
-    let format = SerializationFormats::JSON;
 
     let language = if query_params.lang.is_none() {
         isolang::Language::from_str(
@@ -119,15 +128,12 @@ pub async fn search(
             query_params.page.unwrap_or(1),
         );
 
+    // TODO compute and fill digest before serialization?? or does serialization handle this?
     let result = serde_json::json!({
         "r": search_result.records.iter().map(|r| {
             serde_json::json!({
                 "oca_bundle":
-                    serde_json::from_str::<serde_json::Value>(
-                        &String::from_utf8(
-                            r.oca_bundle.encode(&code, &format).unwrap()
-                        ).unwrap()
-                    ).unwrap(),
+                    serde_json::to_string(&r.oca_bundle).unwrap(),
                 "metadata": r.metadata,
             })
         }).collect::<Vec<serde_json::Value>>(),
@@ -149,8 +155,6 @@ pub async fn get_oca_bundle(
     query_params: web::Query<OCABundleQueryParams>,
 ) -> HttpResponse {
     let said_str = req.match_info().get("said").unwrap().to_string();
-    let code = HashFunctionCode::Blake3_256;
-    let format = SerializationFormats::JSON;
     let said = match SelfAddressingIdentifier::from_str(&said_str) {
         Ok(said) => said,
         Err(e) => {
@@ -162,41 +166,48 @@ pub async fn get_oca_bundle(
 
     let with_dependencies = query_params.w.unwrap_or(false);
 
-    let result = match app_state
+    // Lock once
+    let facade = app_state
         .facade
         .lock()
-        .unwrap_or_else(|e| e.into_inner())
-        .get_oca_bundle(said, with_dependencies)
-    {
-        Ok(oca_bundle) => {
-            let version = serde_json::from_str::<serde_json::Value>(
-                &String::from_utf8(
-                    oca_bundle.encode(&code, &format).unwrap()
-                ).unwrap()
-            ).unwrap().get("v").unwrap().clone();
-            serde_json::to_string(&serde_json::json!({
-                "v": version,
-                "bundle":
-                    serde_json::from_str::<serde_json::Value>(
-                        &String::from_utf8(
-                            oca_bundle.bundle.encode(&code, &format).unwrap()
-                        ).unwrap()
-                    ).unwrap(),
-                "dependencies": oca_bundle.dependencies.iter().map(|d| {
-                    serde_json::from_str::<serde_json::Value>(
-                        &String::from_utf8(
-                            d.encode(&code, &format).unwrap()
-                        ).unwrap()
-                    ).unwrap()
-                }).collect::<Vec<serde_json::Value>>(),
+        .unwrap_or_else(|e| e.into_inner());
+
+    let result = if with_dependencies {
+        // Full bundle + dependencies
+        match facade.get_oca_bundle_set(said) {
+            Ok(bundle_set) => {
+                let version = bundle_set.bundle.model.version.clone();
+                serde_json::to_string(&serde_json::json!({
+                    "v": version,
+                    "bundle": bundle_set.bundle,
+                    "dependencies":  bundle_set.dependencies
             }))
-            .expect("Failed to serialize oca_bundle")
-        },
-        Err(errors) => serde_json::to_string(&serde_json::json!({
-            "success": false,
-            "errors": errors,
-        }))
-        .expect("Failed to serialize errors"),
+            .expect("Failed to serialize bundle set")
+            }
+            Err(errors) => serde_json::to_string(&serde_json::json!({
+                "success": false,
+                "errors": errors,
+            }))
+                .expect("Failed to serialize errors"),
+        }
+    } else {
+        // Just the bundle (no dependencies)
+        match facade.get_oca_bundle(said) {
+            Ok(oca_bundle) => {
+                let version = oca_bundle.model.version.clone();
+                serde_json::to_string(&serde_json::json!({
+                    "v": version,
+                    "bundle": oca_bundle.model,
+                    "dependencies": Vec::<serde_json::Value>::new(),
+                }))
+                    .expect("Failed to serialize bundle")
+            }
+            Err(errors) => serde_json::to_string(&serde_json::json!({
+                "success": false,
+                "errors": errors,
+            }))
+                .expect("Failed to serialize errors"),
+        }
     };
 
     HttpResponse::Ok()

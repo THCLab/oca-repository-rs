@@ -1,5 +1,4 @@
 use actix_web::{http::header::ContentType, web, HttpResponse};
-use oca_rs::{EncodeBundle, HashFunctionCode, SerializationFormats};
 
 use crate::startup::AppState;
 
@@ -15,8 +14,6 @@ pub async fn fetch_all_oca_bundle(
 ) -> HttpResponse {
     let page = query_params.page.unwrap_or(1);
     let limit = query_params.limit.unwrap_or(100);
-    let code = HashFunctionCode::Blake3_256;
-    let format = SerializationFormats::JSON;
 
     let result = match app_state
         .facade
@@ -28,13 +25,7 @@ pub async fn fetch_all_oca_bundle(
             serde_json::json!({
                 "success": true,
                 "r":
-                    all_oca_bundles.records.iter().map(|oca_bundle| {
-                        serde_json::from_str(
-                            &String::from_utf8(
-                                oca_bundle.encode(&code, &format).unwrap()
-                            ).unwrap()
-                        ).unwrap()
-                    }).collect::<Vec<serde_json::Value>>(),
+                    all_oca_bundles.records,
                 "m": all_oca_bundles.metadata,
             })
         }

@@ -1,7 +1,7 @@
 use crate::cache::OCAFilesCache;
 use crate::routes::health_check;
-use oca_rs::Facade;
-use oca_rs::{data_storage::DataStorage, repositories::SQLiteConfig};
+use oca_sdk_rs::Store;
+use oca_sdk_rs::{DataStorage, SQLiteConfig};
 // use crate::routes::namespaces;
 use crate::routes::{explore, internal, objects, oca_bundles};
 use std::sync::{Arc, Mutex};
@@ -29,7 +29,7 @@ use std::net::TcpListener;
 } */
 
 pub struct AppState {
-    pub facade: Mutex<Facade>,
+    pub facade: Mutex<Store>,
     pub cache: OCAFilesCache,
 }
 
@@ -43,7 +43,7 @@ pub fn run(
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);
         let state = AppState {
-            facade: Mutex::new(oca_rs::Facade::new(
+            facade: Mutex::new(Store::new(
                 data_storage.clone(),
                 filesystem_storage.clone(),
                 cache_storage_config.clone(),

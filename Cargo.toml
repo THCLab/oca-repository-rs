@@ -1,6 +1,6 @@
 [package]
 name = "oca-repository"
-version = "0.8.1"
+version = "2.0.0-rc1"
 edition = "2021"
 license = "EUPL-1.2"
 resolver = "2"
@@ -24,13 +24,17 @@ dyn-clonable = "0.9.0"
 indexmap = { version = "1.9.3", features = ["serde"] }
 isolang = "2.3.0"
 oca-parser-xls = { version = "3.0.0-rc.9", optional = true }
-oca-rs = { version = "0.7.1" }
+oca-sdk-rs = { version = "2.0.0-rc1", path = "../oca-sdk-rs" }
 rusqlite = "0.29.0"
 serde = { version = "1.0", features = ["derive"] }
 serde-value = "0.7.0"
 serde_json = "1.0"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
-said = { version = "0.4.1", features = ["macros"] }
+said = { version = "0.5.0", path = "../cesrox/said", features = ["macros"] }
 sha2 = "0.10.8"
 base64 = "0.22.1"
 kv = { version = "0.24.0", features = ["json-value"]}
+tracing = { version = "0.1", features = ["log"] }        # tracing macros + log compat types
+tracing-log = "0.2"                                      # forwards log -> tracing
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
