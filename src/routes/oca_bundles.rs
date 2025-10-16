@@ -1,7 +1,7 @@
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
+use tracing::info;
 // use cached::IOCached;
 use crate::startup::AppState;
-use oca_sdk_rs::overlay_registry::OverlayLocalRegistry;
 use said::SelfAddressingIdentifier;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
@@ -11,6 +11,7 @@ pub async fn add_oca_file(
     item: web::Bytes,
     _req: HttpRequest,
 ) -> HttpResponse {
+    info!("Received OCA file");
     let ocafile = match String::from_utf8(item.to_vec()) {
         Ok(parsed) => parsed,
         Err(e) => {
@@ -28,14 +29,6 @@ pub async fn add_oca_file(
     let cached = app_state.cache.get(&ocafile);
 
 
-    let overlay_registry = match OverlayLocalRegistry::from_dir("test/assets/overlay-file/") {
-        Ok(registry) => registry,
-        Err(e) => {
-            return HttpResponse::InternalServerError()
-            .content_type(ContentType::json())
-           .body(e.to_string());
-        }
-    };
 
     let result = match cached {
         Ok(Some(cached_said)) => {
@@ -50,7 +43,7 @@ pub async fn add_oca_file(
                     .facade
                     .lock()
                     .unwrap_or_else(|e| e.into_inner())
-                    .build_from_ocafile(ocafile.clone(), overlay_registry)
+                    .build_from_ocafile(ocafile.clone(), app_state.overlayfile_registry.clone())
             };
 
             match built_result

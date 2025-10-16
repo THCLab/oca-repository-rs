@@ -1,5 +1,6 @@
 use crate::cache::OCAFilesCache;
 use crate::routes::health_check;
+use oca_sdk_rs::overlay_registry::OverlayLocalRegistry;
 use oca_sdk_rs::Store;
 use oca_sdk_rs::{DataStorage, SQLiteConfig};
 // use crate::routes::namespaces;
@@ -31,6 +32,7 @@ use std::net::TcpListener;
 pub struct AppState {
     pub facade: Mutex<Store>,
     pub cache: OCAFilesCache,
+    pub overlayfile_registry: OverlayLocalRegistry,
 }
 
 pub fn run(
@@ -39,6 +41,7 @@ pub fn run(
     filesystem_storage: Box<dyn DataStorage + Send + Sync>,
     cache_storage_config: SQLiteConfig,
     ocafiles_cache: OCAFilesCache,
+    overlayfile_registry: OverlayLocalRegistry,
 ) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(move || {
         // let auth = HttpAuthentication::bearer(validator);
@@ -48,8 +51,8 @@ pub fn run(
                 filesystem_storage.clone(),
                 cache_storage_config.clone(),
             )),
-
             cache: ocafiles_cache.clone(),
+            overlayfile_registry: overlayfile_registry.clone(),
         };
         #[allow(clippy::arc_with_non_send_sync)]
         let facade_arc = Arc::new(state);

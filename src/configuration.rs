@@ -14,6 +14,7 @@ pub struct ApplicationSettings {
     pub data_entries_path: Option<String>,
     pub log_to_file: bool,
     pub log_path: Option<String>,
+    pub overlayfile_dir: String,
 }
 
 #[derive(serde::Deserialize)]
