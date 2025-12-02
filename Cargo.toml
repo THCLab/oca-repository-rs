@@ -15,14 +15,14 @@ path = "src/main.rs"
 name = "oca-repository"
 
 [dependencies]
-actix-files = "0.6.6"
-actix-web = "4.9.0"
+actix-files = "0.6.9"
+actix-web = "4.12.1"
 actix-web-httpauth = "0.8.2"
-time = "0.3.36"
-config = "0.13.2"
-dyn-clonable = "0.9.0"
-indexmap = { version = "1.9.3", features = ["serde"] }
-isolang = "2.3.0"
+time = "0.3.44"
+config = "0.15.19"
+dyn-clonable = "0.9.2"
+indexmap = { version = "2.12.1", features = ["serde"] }
+isolang = "2.4.0"
 # oca-parser-xls = { version = "3.0.0-rc.9", optional = true }
 oca-sdk-rs = { version = "2.0.0-rc.2" }
 oca-store = { version = "2.0.0-rc.4" }
@@ -32,7 +32,7 @@ serde-value = "0.7.0"
 serde_json = "1.0"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 said = { version = "0.5.2", features = ["macros"] }
-sha2 = "0.10.8"
+sha2 = "0.10.9"
 base64 = "0.22.1"
 kv = { version = "0.24.0", features = ["json-value"]}
 tracing = { version = "0.1", features = ["log"] }        # tracing macros + log compat types
