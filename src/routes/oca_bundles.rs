@@ -1,4 +1,5 @@
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
+use oca_sdk_rs::OCABundle;
 use tracing::info;
 // use cached::IOCached;
 use crate::startup::AppState;
@@ -158,6 +159,7 @@ pub async fn get_oca_bundle(
     };
 
     let with_dependencies = query_params.w.unwrap_or(false);
+    info!("Received request for OCA bundle: {} include dependencies: {}" , said_str, with_dependencies);
 
     // Lock once
     let facade = app_state
@@ -169,10 +171,10 @@ pub async fn get_oca_bundle(
         // Full bundle + dependencies
         match facade.get_oca_bundle_set(said) {
             Ok(bundle_set) => {
-                let version = bundle_set.bundle.model.version.clone();
+                let version = bundle_set.bundle.version.clone();
                 serde_json::to_string(&serde_json::json!({
                     "v": version,
-                    "bundle": bundle_set.bundle,
+                    "bundle": OCABundle::from(bundle_set.bundle),
                     "dependencies":  bundle_set.dependencies
             }))
             .expect("Failed to serialize bundle set")
@@ -187,10 +189,10 @@ pub async fn get_oca_bundle(
         // Just the bundle (no dependencies)
         match facade.get_oca_bundle(said) {
             Ok(oca_bundle) => {
-                let version = oca_bundle.model.version.clone();
+                let version = oca_bundle.version.clone();
                 serde_json::to_string(&serde_json::json!({
                     "v": version,
-                    "bundle": oca_bundle.model,
+                    "bundle": OCABundle::from(oca_bundle),
                     "dependencies": Vec::<serde_json::Value>::new(),
                 }))
                     .expect("Failed to serialize bundle")

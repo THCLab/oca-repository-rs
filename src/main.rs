@@ -6,11 +6,10 @@ use tracing::info;
 use std::net::TcpListener;
 
 // use meilisearch_sdk::client::*;
-use oca_sdk_rs::{
-    FileSystemStorage, FileSystemStorageConfig, SledDataStorage, SledDataStorageConfig,
+use oca_store::data_storage::{
+    DataStorage, FileSystemStorage, FileSystemStorageConfig, SledDataStorage, SledDataStorageConfig,
 };
-use oca_sdk_rs::SQLiteConfig;
-use oca_sdk_rs::DataStorage;
+use oca_store::repositories::SQLiteConfig;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {

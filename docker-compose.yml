@@ -9,8 +9,25 @@ services:
       - 8000:8000
     volumes:
       - ./config/config.yml:/app/config/config.yml
+      - ./core_overlays/:/app/core_overlays
       - data-storage:/app/db
       - search-data-storage:/app/db_search
+  swagger:
+    image: swaggerapi/swagger-ui:latest
+    container_name: oca_swagger
+    environment:
+      URLS: >
+        [
+          { "url": "./openapi-v1.yml", "name": "API v1" },
+          { "url": "./openapi-v2.yml", "name": "API v2" }
+        ]
+      URLS_PRIMARY_NAME: "API v2"
+    volumes:
+      - ./openapi-v2.yml:/usr/share/nginx/html/openapi-v2.yml
+      - ./openapi-v1.yml:/usr/share/nginx/html/openapi-v1.yml
+    ports:
+      - 8080:8080
+
 
 volumes:
   data-storage:

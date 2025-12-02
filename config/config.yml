@@ -6,7 +6,7 @@ application:
   # if log_to_file set to true and path not set default: /var/log/oca_repository.log
   log_path: "./logs/oca_repository.log"
   # path to directory where overlayfile definitions are located
-  overlayfile_dir: "/mnt/Storage/Workspace/HCF/sources/oca-rs/overlay-file/core_overlays"
+  overlayfile_dir: "./core_overlays"
 
 database:
   path: "./db"

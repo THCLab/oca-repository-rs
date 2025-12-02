@@ -1,0 +1,87 @@
+ADD OVERLAY label
+  VERSION 2.0.0
+  UNIQUE KEYS language
+  ADD ATTRIBUTES language=Lang
+  ADD OBJECT attribute_labels
+    WITH KEYS attr-names
+    WITH VALUES Text
+
+ADD OVERLAY meta
+  VERSION 2.0.0
+  UNIQUE KEYS language
+  ADD ATTRIBUTES language=Lang
+  ADD ATTRIBUTES [description, name]
+    WITH VALUES Text
+  ADD ATTRIBUTES [...]
+    WITH VALUES ANY
+
+ADD OVERLAY character_encoding
+  VERSION 2.0.0
+  ADD OBJECT attribute_character_encodings
+    WITH KEYS attr-names
+    WITH VALUES Text
+
+ADD OVERLAY conformance
+  VERSION 2.0.0
+  ADD OBJECT attribute_conformances
+    WITH KEYS attr-names
+    WITH VALUES text
+
+ADD OVERLAY format
+  VERSION 2.0.0
+  ADD OBJECT attribute_formats
+    WITH KEYS attr-names
+    WITH VALUES text
+
+ADD OVERLAY unit
+  VERSION 2.0.0
+  ADD ATTRIBUTES metric_system=Text
+  ADD OBJECT attribute_units
+    WITH KEYS attr-names
+    WITH VALUES text
+
+ADD OVERLAY cardinality
+  VERSION 2.0.0
+  ADD OBJECT attribute_cardinalities
+    WITH KEYS attr-names
+    WITH VALUES text
+
+ADD OVERLAY entry_code
+  VERSION 2.0.0
+  ADD OBJECT attribute_entry_codes
+    WITH KEYS attr-names
+    WITH VALUES ref|array
+      WITH VALUES text
+
+ADD OVERLAY entry
+  VERSION 2.0.0
+  ADD ATTRIBUTES language=Lang
+  ADD OBJECT attribute_entries
+    WITH KEYS attr-names
+    WITH VALUES ref|object
+      WITH KEYS text
+      WITH VALUES Text
+
+ADD overlay sensitive
+  VERSION 2.0.0
+  ADD ARRAY attributes
+    WITH VALUES attr-names
+
+ADD OVERLAY standard
+  VERSION 2.0.0
+  ADD OBJECT attribute_standards
+    WITH KEYS attr-names
+    WITH VALUES text
+
+ADD OVERLAY mapping
+  VERSION 2.0.0
+  ADD OBJECT attribute_mappings
+    WITH KEYS attr-names
+    WITH VALUES text
+
+ADD OVERLAY entry_code_mapping
+  VERSION 2.0.0
+  ADD OBJECT attribute_entry_codes_mappings
+    WITH KEYS text
+    WITH VALUES ref|array
+      WITH VALUES text
