@@ -12,6 +12,9 @@ pub struct ApplicationSettings {
     pub host: String,
     pub port: u16,
     pub data_entries_path: Option<String>,
+    pub log_to_file: bool,
+    pub log_path: Option<String>,
+    pub overlayfile_dir: String,
 }
 
 #[derive(serde::Deserialize)]

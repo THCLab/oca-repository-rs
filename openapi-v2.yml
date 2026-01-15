@@ -1,35 +1,120 @@
-openapi: 3.0.2
+openapi: 3.1.0
 info:
   title: OCA Repository
-  description: ''
-  version: 0.4.15
+  description: 'This is official API specification of OCA Repository which you can read more about at [https://oca.colossi.network/ecosystem/oca-repository.html](https://oca.colossi.network/ecosystem/oca-repository.html)'
+  version: 2.0.0
+  contact:
+    email: contact@humancolossus.org
 servers:
-  - url: https://repository.oca.argo.colossi.network/api/
+  - url: https://repository.oca.argo.colossi.network/api/v2/
   - url: http://localhost:8000
 tags:
-  - name: Public API
+  - name: OCA Bundle
     description: Endpoints to manage the OCA Bundles
 
 
 paths:
   /oca-bundles:
     post:
-      tags: [Public API]
+      tags: [OCA Bundle]
       summary: Creates an OCA Bundle from OCAfile
       requestBody:
         content:
           text/plain:
             schema:
               type: string
-            example: |
-              ADD ATTRIBUTE d=Text i=Text passed=Boolean
+            example: |-
+              ADD ATTRIBUTE dateOfBirth=DateTime \
+               documentNumber=Text \
+                              documentType=[ Text ] fullName=Text \
+                              height=Numeric issuingState=Text photoImage=Binary \
+                              sex=Text ocrTextLines=[[ Text ]]
 
-              ADD META en PROPS name="Entrance credential" description="Entrance credential"
+              ADD OVERLAY character_encoding
+                attribute_character_encodings
+                  photoImage="base64"
 
-              ADD CHARACTER_ENCODING ATTRS d=utf-8 i=utf-8 passed=utf-8
-              ADD CONFORMANCE ATTRS d=M i=M passed=M
-              ADD LABEL en ATTRS d="Schema digest" i="Credential Issuee" passed="Passed"
-              ADD INFORMATION en ATTRS d="Schema digest" i="Credential Issuee" passed="Enables or disables passing"
+              ADD OVERLAY format
+                attribute_formats
+                  dateOfBirth="YYYY-MM-DD"
+                  documentNumber="[A-Z0-9]{9}"
+                  photoImage="image/jpeg"
+                  sex="[A-Z]{1}"
+
+              ADD OVERLAY label
+                language="en"
+                attribute_labels
+                  dateOfBirth="Date of birth"
+                  documentNumber="Passport Number"
+                  documentType="Document"
+                  fullName="Name"
+                  height="Height"
+                  issuingState="Issuing State or organization (in full)"
+                  photoImage="Portrait image"
+                  sex="Sex"
+
+              ADD Overlay meta
+                language="en"
+                name="Digital Passport"
+                description="An example of a Digital Passport schema"
+                affiliation="The Goverment of Antarctica"
+
+              ADD Overlay standard
+                attribute_standards
+                  dateOfBirth="ISO 8601"
+                  documentNumber="ISO 3166-1 alpha-2"
+
+              ADD Overlay cardinality
+                attribute_cardinalities
+                  documentType="1-2"
+
+              ADD Overlay conformance
+                attribute_conformances
+                  documentType="M"
+                  fullName="M"
+                  height="optional"
+                  issuingState="O"
+                  photoImage="M"
+                  sex="M"
+
+              ADD Overlay entry_code
+                attribute_entry_codes
+                  documentType=["PE", "PM"]
+                  issuingState=refs:EGyWgdQR9dW_I5oHlHBMoO9AA_eMeb2p3XzcCRCBbKCM
+                  sex=["F", "M", "X"]
+
+              ADD Overlay entry
+                language="en"
+                attribute_entries
+                  issuingState=refs:EGyWgdQR9dW_I5oHlHBMoO9AA_eMeb2p3XzcCRCBbKCM
+                  documentType
+                    PE="Diplomatic Passport"
+                    PM="Passport"
+                  sex
+                    F="Female"
+                    M="Male"
+                    X="Unspecified"
+
+              ADD Overlay UNIT
+                metric_system="SI"
+                attribute_units
+                  height="cm"
+
+              ADD Overlay mapping
+                attribute_mappings
+                  dateOfBirth="birth_date"
+                  documentNumber="document_number"
+                  documentType="document_type"
+                  fullName="name"
+                  height="person_height"
+                  issuingState="issuing_state"
+
+              ADD Overlay entry_code_mapping
+                attribute_entry_codes_mappings
+                  documentType=["PE:KE", "PM:ZK" ]
+
+              ADD overlay sensitive
+                attributes=["fullName", "photoImage", "dataOfBirth", "documentNumber"]
       responses:
         '200':
           description: OCA Bundle created successfully
@@ -47,7 +132,7 @@ paths:
 
   /oca-bundles/search:
     get:
-      tags: [Public API]
+      tags: [OCA Bundle]
       summary: Search OCA Bundles
       parameters:
         - name: q
@@ -70,7 +155,7 @@ paths:
 
   /oca-bundles/{said}:
     get:
-      tags: [Public API]
+      tags: [OCA Bundle]
       summary: Get OCA Bundle
       parameters:
         - name: said
@@ -96,8 +181,8 @@ paths:
 
   /oca-bundles/{said}/steps:
     get:
-      tags: [Public API]
-      summary: List OCAFile steps to get OCA Bundle
+      tags: [OCA Bundle]
+      summary: List OCAFile steps which where used to build OCA Bundle
       parameters:
         - name: said
           in: path
@@ -118,8 +203,8 @@ paths:
 
   /oca-bundles/{said}/ocafile:
     get:
-      tags: [Public API]
-      summary: List OCAFile to get OCA Bundle
+      tags: [OCA Bundle]
+      summary: Recreate OCAFILE from OCA Bundle
       parameters:
         - name: said
           in: path
@@ -135,7 +220,7 @@ paths:
 
   /oca-bundles/{said}/data-entry:
     get:
-      tags: [Public API]
+      tags: [OCA Bundle]
       summary: Download OCA Bundle data entry XLSX file
       parameters:
         - name: said
@@ -152,7 +237,7 @@ paths:
 
   /explore/{said}:
     get:
-      tags: [Public API]
+      tags: [OCA Bundle]
       summary: Get relations of any OCA object
       parameters:
         - name: said
@@ -169,7 +254,7 @@ paths:
 
   /objects:
     get:
-      tags: [Public API]
+      tags: [OCA Bundle]
       summary: Get list of OCA objects
       parameters:
         - name: said

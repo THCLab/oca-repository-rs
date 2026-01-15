@@ -1,3 +1,5 @@
+.cargo
+logs
 /target
 cache
 db

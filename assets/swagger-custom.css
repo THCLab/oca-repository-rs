@@ -1,0 +1,18 @@
+/* Change top bar background color */
+.swagger-ui .topbar {
+  background-color: #007C9E;
+}
+
+.swagger-ui .topbar .link svg {
+  display: none !important;
+}
+
+.swagger-ui .topbar a {
+  display: inline-block;           /* make it box-like */
+  width: 200px;                    /* adjust to your logo */
+  height: 40px;                    /* adjust to your logo */
+  background-image: url("/logo.png");
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: contain;
+}

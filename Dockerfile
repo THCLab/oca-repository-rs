@@ -13,7 +13,7 @@ RUN     apt-get update --quiet \
 RUN cargo chef cook --release --recipe-path recipe.json
 # Build application
 COPY . .
-RUN cargo build --release --features data_entries_xls
+RUN cargo build --release
 
 FROM debian:bookworm-slim AS runtime
 WORKDIR /app

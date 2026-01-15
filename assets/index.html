@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OCA Repository API Docs</title>
+
+  <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
+
+  <link rel="stylesheet" type="text/css" href="./swagger-custom.css" />
+</head>
+<body>
+  <div id="swagger-ui"></div>
+
+  <script src="./swagger-ui-bundle.js" crossorigin></script>
+  <script src="./swagger-ui-standalone-preset.js" crossorigin></script>
+  <script>
+    window.onload = () => {
+      window.ui = SwaggerUIBundle({
+        urls: [
+          { url: "/openapi-v1.yml", name: "API v1" },
+          { url: "/openapi-v2.yml", name: "API v2" }
+        ],
+        "urls.primaryName": "API v2",
+        dom_id: '#swagger-ui',
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset,
+        ],
+        layout: "StandaloneLayout",
+      });
+    };
+  </script>
+</body>
+</html>
+

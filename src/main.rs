@@ -1,21 +1,46 @@
 use oca_repository::configuration::get_configuration;
+use oca_repository::logging::{init_tracing, LogOutput};
 use oca_repository::startup::run;
+use oca_sdk_rs::overlay_registry::OverlayLocalRegistry;
+use tracing::info;
 use std::net::TcpListener;
 
 // use meilisearch_sdk::client::*;
-use oca_rs::data_storage::{
+use oca_store::data_storage::{
     DataStorage, FileSystemStorage, FileSystemStorageConfig, SledDataStorage, SledDataStorageConfig,
 };
-use oca_rs::repositories::SQLiteConfig;
+use oca_store::repositories::SQLiteConfig;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
+
     let configuration = get_configuration().expect("Failed to read configuration.");
     let address = format!(
         "{}:{}",
         configuration.application.host, configuration.application.port
     );
+
+    let log_output = if configuration.application.log_to_file {
+        LogOutput::File(configuration.application.log_path)
+    } else {
+        LogOutput::Stderr
+    };
+
+    init_tracing(log_output);
+
+    info!("Application starting up…");
     let listener = TcpListener::bind(address)?;
+
+    let overlayfile_registry = match OverlayLocalRegistry::from_dir(configuration.application.overlayfile_dir) {
+        Ok(registry) => {
+            info!("Initialized overlay registry: {:?}", registry);
+            registry
+        }
+        Err(e) => {
+            eprintln!("Failed to initialize overlay registry: {}", e);
+            std::process::exit(1);
+        }
+    };
 
     let db_path = std::path::PathBuf::from(configuration.database.path);
     let sled_db = Box::new(
@@ -38,6 +63,6 @@ async fn main() -> std::io::Result<()> {
     let cache_storage_config = SQLiteConfig::build().path(cache_db_path).unwrap();
     let ocafiles_cache = oca_repository::cache::OCAFilesCache::new(ocafiles_cache_path).unwrap();
 
-    run(listener, sled_db, filesystem_storage, cache_storage_config, ocafiles_cache)?.await?;
+    run(listener, sled_db, filesystem_storage, cache_storage_config, ocafiles_cache, overlayfile_registry)?.await?;
     Ok(())
 }

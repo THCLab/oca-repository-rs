@@ -5,7 +5,7 @@
 1. Pull the Docker image for OCA Repository (be aware to NOT use `latest` tag for production deployment)
 
 ```
-docker pull ghcr.io/thclab/oca-repository:0.8.1
+docker pull ghcr.io/thclab/oca-repository:2.0.0-rc.1
 ```
 2. Customize config file
 
@@ -16,6 +16,12 @@ application:
   host: 0.0.0.0
   port: 8000
   data_entries_path: "/tmp"
+  # enable logging
+  log_to_file: true
+  # if log_to_file set to true and path not set default: /var/log/oca_repository.log
+  log_path: "./logs/oca_repository.log"
+  # path to directory where overlayfile definitions are located
+  overlayfile_dir: "./core_overlays"
 
 database:
   path: "./db"
@@ -47,7 +53,7 @@ With Docker and latest release
 ```
 git clone git@github.com:THCLab/oca-repository-rs.git
 
-docker-compose up
+docker compose up
 ```
 
 Locally with local build:
@@ -60,9 +66,9 @@ cargo build
 ./target/debug/oca-repository
 ```
 
-This would start on default port `8000` insance of repository.
+This would start on default port `8000` instance of repository.
 You can then use `curl` for playing with api or simply go to `https://repository.oca.argo.colossi.network/`
-and switch servers to `localhost:8000` and use swagger.
+and switch servers to `localhost:8000` and use swagger (Remember to enable CORS in the browser).
 
 Add OCA Bundle:
 

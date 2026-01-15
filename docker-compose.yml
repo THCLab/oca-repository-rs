@@ -9,8 +9,23 @@ services:
       - 8000:8000
     volumes:
       - ./config/config.yml:/app/config/config.yml
+      - ./core_overlays/:/app/core_overlays
       - data-storage:/app/db
       - search-data-storage:/app/db_search
+
+  swagger:
+    image: swaggerapi/swagger-ui:latest
+    container_name: oca_swagger
+    volumes:
+      - ./openapi-v2.yml:/usr/share/nginx/html/openapi-v2.yml
+      - ./openapi-v1.yml:/usr/share/nginx/html/openapi-v1.yml
+      - ./assets/swagger-custom.css:/usr/share/nginx/html/swagger-custom.css
+      - ./assets/logo.png:/usr/share/nginx/html/logo.png
+      - ./assets/index.html:/usr/share/nginx/html/index.html
+      - ./assets/favicon.png:/usr/share/nginx/html/favicon.ico
+    ports:
+      - 8080:8080
+
 
 volumes:
   data-storage:
