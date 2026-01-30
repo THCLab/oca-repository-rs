@@ -1,9 +1,9 @@
 use crate::cache::OCAFilesCache;
 use crate::routes::health_check;
 use oca_sdk_rs::overlay_registry::OverlayLocalRegistry;
-use oca_store::Facade as Store;
 use oca_store::data_storage::DataStorage;
 use oca_store::repositories::SQLiteConfig;
+use oca_store::Facade as Store;
 // use crate::routes::namespaces;
 use crate::routes::{explore, internal, objects, oca_bundles};
 use std::sync::{Arc, Mutex};
@@ -66,7 +66,6 @@ pub fn run(
                 web::get().to(oca_bundles::get_oca_file_history),
             )
             .route("/{said}/ocafile", web::get().to(oca_bundles::get_oca_file));
-        #[cfg(feature = "data_entries_xls")]
         let oca_bundles_scope = oca_bundles_scope.route(
             "/{said}/data-entry",
             web::get().to(oca_bundles::get_oca_data_entry),

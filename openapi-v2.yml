@@ -130,29 +130,6 @@ paths:
                     said:
                       type: string
 
-  /oca-bundles/search:
-    get:
-      tags: [OCA Bundle]
-      summary: Search OCA Bundles
-      parameters:
-        - name: q
-          in: query
-          required: true
-          description: Query to search through OCA Bundles
-          schema:
-            type: string
-        - name: lang
-          in: query
-          required: false
-          description: Language to prioritize in search
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response
-        '404':
-          description: Bundle not found
-
   /oca-bundles/{said}:
     get:
       tags: [OCA Bundle]
@@ -221,12 +198,27 @@ paths:
   /oca-bundles/{said}/data-entry:
     get:
       tags: [OCA Bundle]
-      summary: Download OCA Bundle data entry XLSX file
+      summary: Download OCA Bundle data entry file (CSV or XLSX)
       parameters:
         - name: said
           in: path
           required: true
           description: OCA Bundle SAID
+          schema:
+            type: string
+        - name: format
+          in: query
+          description: Output format (csv or xlsx). Default is xlsx.
+          schema:
+            type: string
+        - name: labels
+          in: query
+          description: Language code for labels (e.g., en).
+          schema:
+            type: string
+        - name: metadata
+          in: query
+          description: Language code for metadata (e.g., en).
           schema:
             type: string
       responses:
