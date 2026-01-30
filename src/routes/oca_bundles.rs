@@ -5,6 +5,7 @@ use tracing::info;
 use crate::startup::AppState;
 use said::SelfAddressingIdentifier;
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 use std::str::FromStr;
 
 pub async fn add_oca_file(
@@ -29,8 +30,6 @@ pub async fn add_oca_file(
     }
     let cached = app_state.cache.get(&ocafile);
 
-
-
     let result = match cached {
         Ok(Some(cached_said)) => {
             serde_json::json!({
@@ -40,15 +39,14 @@ pub async fn add_oca_file(
         }
         Ok(None) => {
             let built_result = {
-               app_state
+                app_state
                     .facade
                     .lock()
                     .unwrap_or_else(|e| e.into_inner())
                     .build_from_ocafile(ocafile.clone(), app_state.overlayfile_registry.clone())
             };
 
-            match built_result
-            {
+            match built_result {
                 Ok(oca_bundle) => {
                     let said = oca_bundle.digest.clone();
                     if let Err(e) = app_state.cache.insert(&ocafile, oca_bundle.digest.unwrap()) {
@@ -60,7 +58,7 @@ pub async fn add_oca_file(
                         "success": true,
                         "said": said.unwrap(),
                     })
-                },
+                }
                 Err(errors) => {
                     serde_json::json!({
                         "success": false,
@@ -73,7 +71,7 @@ pub async fn add_oca_file(
             println!("Error: {}", &e);
             return HttpResponse::InternalServerError()
                 .content_type(ContentType::json())
-                .body(e.to_string())
+                .body(e.to_string());
         }
     };
 
@@ -159,13 +157,13 @@ pub async fn get_oca_bundle(
     };
 
     let with_dependencies = query_params.w.unwrap_or(false);
-    info!("Received request for OCA bundle: {} include dependencies: {}" , said_str, with_dependencies);
+    info!(
+        "Received request for OCA bundle: {} include dependencies: {}",
+        said_str, with_dependencies
+    );
 
     // Lock once
-    let facade = app_state
-        .facade
-        .lock()
-        .unwrap_or_else(|e| e.into_inner());
+    let facade = app_state.facade.lock().unwrap_or_else(|e| e.into_inner());
 
     let result = if with_dependencies {
         // Full bundle + dependencies
@@ -173,17 +171,17 @@ pub async fn get_oca_bundle(
             Ok(bundle_set) => {
                 let version = bundle_set.bundle.version.clone();
                 serde_json::to_string(&serde_json::json!({
-                    "v": version,
-                    "bundle": OCABundle::from(bundle_set.bundle),
-                    "dependencies":  bundle_set.dependencies
-            }))
-            .expect("Failed to serialize bundle set")
+                        "v": version,
+                        "bundle": bundle_set.bundle,
+                        "dependencies":  bundle_set.dependencies
+                }))
+                .expect("Failed to serialize bundle set")
             }
             Err(errors) => serde_json::to_string(&serde_json::json!({
                 "success": false,
                 "errors": errors,
             }))
-                .expect("Failed to serialize errors"),
+            .expect("Failed to serialize errors"),
         }
     } else {
         // Just the bundle (no dependencies)
@@ -195,13 +193,13 @@ pub async fn get_oca_bundle(
                     "bundle": OCABundle::from(oca_bundle),
                     "dependencies": Vec::<serde_json::Value>::new(),
                 }))
-                    .expect("Failed to serialize bundle")
+                .expect("Failed to serialize bundle")
             }
             Err(errors) => serde_json::to_string(&serde_json::json!({
                 "success": false,
                 "errors": errors,
             }))
-                .expect("Failed to serialize errors"),
+            .expect("Failed to serialize errors"),
         }
     };
 
@@ -231,11 +229,9 @@ pub async fn get_oca_file_history(
     let said_str = req.match_info().get("said").unwrap().to_string();
     let said = match SelfAddressingIdentifier::from_str(&said_str) {
         Ok(said) => said,
-        Err(e) => {
-            return HttpResponse::UnprocessableEntity()
-                .content_type(ContentType::json())
-                .body(serde_json::to_string(&vec![format!("Invalid SAID: {}", e)]).unwrap())
-        }
+        Err(e) => return HttpResponse::UnprocessableEntity()
+            .content_type(ContentType::json())
+            .body(serde_json::to_string(&vec![format!("Invalid SAID: {}", e)]).unwrap()),
     };
 
     let result = match app_state
@@ -278,6 +274,13 @@ pub async fn get_oca_file_history(
         .body(serde_json::to_string(&result).unwrap())
 }
 
+#[derive(Deserialize)]
+pub struct DataEntryQuery {
+    format: Option<String>,
+    labels: Option<String>,
+    metadata: Option<String>,
+}
+
 pub async fn get_oca_file(app_state: web::Data<AppState>, req: HttpRequest) -> HttpResponse {
     let said_str = req.match_info().get("said").unwrap().to_string();
     let said = match SelfAddressingIdentifier::from_str(&said_str) {
@@ -308,39 +311,107 @@ pub async fn get_oca_file(app_state: web::Data<AppState>, req: HttpRequest) -> H
     }
 }
 
-#[cfg(feature = "data_entries_xls")]
 pub async fn get_oca_data_entry(
     app_state: web::Data<AppState>,
     req: HttpRequest,
-) -> actix_web::Result<actix_files::NamedFile> {
+    query: web::Query<DataEntryQuery>,
+) -> HttpResponse {
     let configuration = crate::configuration::get_configuration()
-        .map_err(actix_web::error::ErrorInternalServerError)?;
+        .map_err(actix_web::error::ErrorInternalServerError)
+        .map_err(|e| HttpResponse::InternalServerError().body(e.to_string()));
+
+    if let Err(resp) = configuration {
+        return resp;
+    }
+    let configuration = configuration.unwrap();
+
     let data_entries_path = configuration
         .application
         .data_entries_path
-        .unwrap_or("".to_string());
-    let said_str = req.match_info().get("said").unwrap().to_string();
-    let said = SelfAddressingIdentifier::from_str(&said_str)
-        .map_err(|e| actix_web::error::ErrorUnprocessableEntity(format!("Invalid SAID: {}", e)))?;
+        .unwrap_or_else(|| "/tmp".to_string());
 
-    let oca_bundle = app_state
+    let said_str = req.match_info().get("said").unwrap().to_string();
+    let said = match SelfAddressingIdentifier::from_str(&said_str) {
+        Ok(said) => said,
+        Err(e) => {
+            return HttpResponse::UnprocessableEntity().body(format!("Invalid SAID: {}", e));
+        }
+    };
+
+    let bundle_model = match app_state
         .facade
         .lock()
         .unwrap_or_else(|e| e.into_inner())
-        .get_oca_bundle(said, false)
-        .map_err(|e| actix_web::error::ErrorInternalServerError(e.first().unwrap().clone()))?;
-    let oca_bundle_list = vec![oca_bundle.bundle.clone()];
-    let _ = oca_parser_xls::xls_parser::data_entry::generate(
-        oca_bundle_list.as_slice(),
-        format!(
-            "{}/{}",
-            data_entries_path.clone(),
-            oca_bundle.bundle.said.clone().unwrap()
-        ),
-    );
-    Ok(actix_files::NamedFile::open(format!(
-        "{}/{}-data_entry.xlsx",
-        data_entries_path,
-        oca_bundle.bundle.said.clone().unwrap()
-    ))?)
+        .get_oca_bundle(said.clone())
+    {
+        Ok(bundle) => bundle,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(e.first().unwrap().clone());
+        }
+    };
+
+    let bundle_set = match app_state
+        .facade
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .get_oca_bundle_set(said.clone())
+    {
+        Ok(bundle_set) => bundle_set,
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(e.first().unwrap().clone());
+        }
+    };
+
+    let mut deps_index = oca_data_entry::DependencyIndex::default();
+    for dep in bundle_set.dependencies.iter() {
+        if let Some(dep_said) = &dep.digest {
+            deps_index.by_said.insert(dep_said.to_string(), dep.clone());
+        }
+    }
+
+    let extract_options = oca_data_entry::ExtractOptions {
+        label_lang: query.labels.clone(),
+        metadata_lang: query.metadata.clone(),
+    };
+    let schema = match oca_data_entry::entry_schema_from_bundle_with_deps(
+        &bundle_model,
+        &deps_index,
+        &app_state.overlayfile_registry,
+        &extract_options,
+    ) {
+        Ok(schema) => schema,
+        Err(e) => return HttpResponse::InternalServerError().body(e.to_string()),
+    };
+
+    let format = query.format.clone().unwrap_or_else(|| "xlsx".to_string());
+    match format.as_str() {
+        "csv" => {
+            let mut out = Vec::new();
+            let opts = oca_data_entry::CsvOptions {
+                include_metadata_row: query.metadata.is_some(),
+                label_lang: query.labels.clone(),
+                metadata_lang: query.metadata.clone(),
+            };
+            if let Err(e) = oca_data_entry::write_csv(&schema, &mut out, &opts) {
+                return HttpResponse::InternalServerError().body(e.to_string());
+            }
+            HttpResponse::Ok().content_type("text/csv").body(out)
+        }
+        "xlsx" => {
+            let output_path = Path::new(&data_entries_path).join(format!("{}.xlsx", said_str));
+            let opts = oca_data_entry::XlsxOptions {
+                include_metadata_row: query.metadata.is_some(),
+                label_lang: query.labels.clone(),
+                metadata_lang: query.metadata.clone(),
+            };
+            if let Err(e) = oca_data_entry::write_xlsx(&schema, &output_path, &opts) {
+                return HttpResponse::InternalServerError().body(e.to_string());
+            }
+            match actix_files::NamedFile::open(output_path) {
+                Ok(file) => file.into_response(&req),
+                Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+            }
+        }
+        _ => HttpResponse::BadRequest().body("format must be csv or xlsx"),
+    }
 }

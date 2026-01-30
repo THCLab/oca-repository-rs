@@ -125,9 +125,11 @@ fn start_server() -> TestServer {
 }
 
 fn load_example_ocafile() -> String {
-    let examples_root = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("ocafile-examples");
-    let ocafile_path = examples_root.join("2.0").join("specification").join("examples.ocafile");
+    let examples_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("ocafile-examples");
+    let ocafile_path = examples_root
+        .join("2.0")
+        .join("specification")
+        .join("examples.ocafile");
     if !ocafile_path.exists() {
         panic!("ocafile example not found: {}", ocafile_path.display());
     }
@@ -170,19 +172,13 @@ fn e2e_basic_api() {
     assert!(resp.status().is_success());
 
     let ocafile_url = format!("{}/ocafile", bundle_url);
-    let resp = client
-        .get(&ocafile_url)
-        .send()
-        .expect("GET ocafile failed");
+    let resp = client.get(&ocafile_url).send().expect("GET ocafile failed");
     assert!(resp.status().is_success());
     let ocafile_text = resp.text().expect("failed to read ocafile text");
     assert!(ocafile_text.contains("ADD"));
 
     let objects_url = format!("{}/objects?said={}", server.base_url, said);
-    let resp = client
-        .get(&objects_url)
-        .send()
-        .expect("GET objects failed");
+    let resp = client.get(&objects_url).send().expect("GET objects failed");
     assert!(resp.status().is_success());
     let objects_json: Value = resp.json().expect("invalid objects json");
     assert!(objects_json.get("success").is_some());
@@ -193,22 +189,27 @@ fn e2e_basic_api() {
     }
 
     let explore_url = format!("{}/explore/{}", server.base_url, said);
-    let resp = client
-        .get(&explore_url)
-        .send()
-        .expect("GET explore failed");
+    let resp = client.get(&explore_url).send().expect("GET explore failed");
     assert!(resp.status().is_success());
     let explore_json: Value = resp.json().expect("invalid explore json");
     assert!(explore_json.get("success").is_some());
 
-    let data_entry_url = format!("{}/data-entry", bundle_url);
+    let data_entry_csv = format!("{}/data-entry?format=csv&labels=en&metadata=en", bundle_url);
     let resp = client
-        .get(&data_entry_url)
+        .get(&data_entry_csv)
         .send()
-        .expect("GET data-entry failed");
-    if cfg!(feature = "data_entries_xls") {
-        assert!(resp.status().is_success());
-    } else {
-        assert_eq!(resp.status().as_u16(), 404);
-    }
+        .expect("GET data-entry csv failed");
+    assert!(resp.status().is_success());
+    let csv_body = resp.text().expect("csv body");
+    assert!(csv_body.contains("oca_bundle_said"));
+
+    let data_entry_xlsx = format!(
+        "{}/data-entry?format=xlsx&labels=en&metadata=en",
+        bundle_url
+    );
+    let resp = client
+        .get(&data_entry_xlsx)
+        .send()
+        .expect("GET data-entry xlsx failed");
+    assert!(resp.status().is_success());
 }
