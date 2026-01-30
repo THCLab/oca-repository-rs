@@ -85,3 +85,28 @@ Get OCA Bundle:
 ```
 curl http://127.0.0.1:8000/oca-bundles/EF5ERATRBBN_ewEo9buQbznirhBmvrSSC0O2GIR4Gbfs
 ```
+
+## E2E tests (API)
+
+The E2E tests use ocafile examples as a submodule. Ensure it is present before running tests:
+
+```
+cd oca-repository-rs
+# if the submodule is not initialized
+# git submodule update --init --recursive
+```
+
+Run the E2E test suite:
+
+```
+cargo test --test e2e_api
+```
+
+The test boots the server on a random port, posts an example ocafile, and exercises:
+- POST /oca-bundles
+- GET /oca-bundles/{said} (+ ?w=true)
+- GET /oca-bundles/{said}/steps
+- GET /oca-bundles/{said}/ocafile
+- GET /objects?said=...
+- GET /explore/{said}
+- GET /oca-bundles/{said}/data-entry (csv/xlsx)
