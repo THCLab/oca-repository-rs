@@ -23,7 +23,7 @@ pub fn init_tracing(output: LogOutput) {
                     .with_writer(std::io::stderr)
                     .with_target(true)
                     .with_level(true);
-                tracing_subscriber::registry()
+                let _ = tracing_subscriber::registry()
                     .with(filter)
                     .with(fmt_layer)
                     .try_init();
@@ -45,7 +45,7 @@ pub fn init_tracing(output: LogOutput) {
                     .with_level(true)
                     .with_ansi(false); // disable colors in files
 
-                tracing_subscriber::registry()
+                let _ = tracing_subscriber::registry()
                     .with(filter)
                     .with(fmt_layer)
                     .try_init();

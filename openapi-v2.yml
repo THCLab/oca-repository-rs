@@ -130,29 +130,6 @@ paths:
                     said:
                       type: string
 
-  /oca-bundles/search:
-    get:
-      tags: [OCA Bundle]
-      summary: Search OCA Bundles
-      parameters:
-        - name: q
-          in: query
-          required: true
-          description: Query to search through OCA Bundles
-          schema:
-            type: string
-        - name: lang
-          in: query
-          required: false
-          description: Language to prioritize in search
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response
-        '404':
-          description: Bundle not found
-
   /oca-bundles/{said}:
     get:
       tags: [OCA Bundle]
