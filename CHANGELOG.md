@@ -1,3 +1,17 @@
+## [2.0.0-rc.2] - 2026-01-30
+
+### 🚀 Features
+
+- Data-entry API supports csv/xlsx with label/metadata languages
+
+### 💼 Other
+
+- Update oca-sdk and store dependencies
+
+### ⚙️ Miscellaneous Tasks
+
+- Update readme
+- Add end to end test based on ocafile-examples
 ## [2.0.0-rc.1] - 2025-12-02
 
 ### 🚀 Features
@@ -16,6 +30,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Update dependencies
+- Release 2.0.0-rc.1 version
 ## [0.8.1] - 2025-03-25
 
 ### 🚀 Features
