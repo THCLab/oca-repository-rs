@@ -39,7 +39,7 @@ ocafiles_cache:
 2. Run an instance of OCA Repository
 
 ```
-docker run -it --rm -p 8000:8000 -v $PWD/config.yml:/app/config/config.yml:ro ghcr.io/thclab/oca-repository:0.8.1
+docker run -it --rm -p 8000:8000 -v $PWD/config.yml:/app/config/config.yml:ro ghcr.io/thclab/oca-repository:2.0.0-rc.2
 ```
 
 ## Usage
