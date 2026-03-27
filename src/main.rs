@@ -1,7 +1,7 @@
 use oca_repository::configuration::get_configuration;
 use oca_repository::logging::{init_tracing, LogOutput};
 use oca_repository::startup::run;
-use oca_sdk_rs::overlay_registry::OverlayLocalRegistry;
+use oca_sdk_rs::oca::overlay_file::OverlayLocalRegistry;
 use tracing::info;
 use std::net::TcpListener;
 
