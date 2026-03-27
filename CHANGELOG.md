@@ -1,3 +1,9 @@
+## [2.0.0] - 2026-03-27
+
+### ⚙️ Miscellaneous Tasks
+
+- Update readme
+- Bump dependencies
 ## [2.0.0-rc.1] - 2025-12-02
 
 ### 🚀 Features
@@ -16,6 +22,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Update dependencies
+- Release 2.0.0-rc.1 version
 ## [0.8.1] - 2025-03-25
 
 ### 🚀 Features
