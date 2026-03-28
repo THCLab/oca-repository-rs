@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+# Pre-commit hook: ensures core_overlays/semantic.overlayfile is in sync
+# with the source of truth in the oca-rs repository.
+#
+# Install by running:  cp scripts/pre-commit .git/hooks/pre-commit
+#
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+SOURCE_FILE="$REPO_ROOT/../oca-rs/overlay-file/core_overlays/semantic.overlayfile"
+TARGET_FILE="$REPO_ROOT/core_overlays/semantic.overlayfile"
+
+# If oca-rs is not present, skip the check (e.g. CI, deployment builds)
+if [ ! -f "$SOURCE_FILE" ]; then
+    exit 0
+fi
+
+if ! diff -q "$SOURCE_FILE" "$TARGET_FILE" > /dev/null 2>&1; then
+    echo "" >&2
+    echo "ERROR: core_overlays/semantic.overlayfile is out of date with oca-rs source." >&2
+    echo "" >&2
+    diff "$SOURCE_FILE" "$TARGET_FILE" >&2 || true
+    echo "" >&2
+    echo "Run ./update_core_overlays.sh to sync, then re-commit." >&2
+    exit 1
+fi
