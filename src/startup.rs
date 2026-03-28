@@ -1,6 +1,6 @@
 use crate::cache::OCAFilesCache;
 use crate::routes::health_check;
-use oca_sdk_rs::overlay_registry::OverlayLocalRegistry;
+use oca_sdk_rs::oca::overlay_file::OverlayLocalRegistry;
 use oca_store::data_storage::DataStorage;
 use oca_store::repositories::SQLiteConfig;
 use oca_store::Facade as Store;

@@ -1,5 +1,5 @@
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use oca_sdk_rs::OCABundle;
+use oca_sdk_rs::oca::bundle::OCABundle;
 use tracing::info;
 // use cached::IOCached;
 use crate::startup::AppState;
