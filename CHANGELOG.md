@@ -1,8 +1,12 @@
-## [2.0.0-rc.2] - 2026-01-30
+## [2.0.0] - 2026-03-28
 
 ### 🚀 Features
 
 - Data-entry API supports csv/xlsx with label/metadata languages
+
+### 🐛 Bug Fixes
+
+- Include submodule for github actions for tests
 
 ### 💼 Other
 
@@ -12,6 +16,10 @@
 
 - Update readme
 - Add end to end test based on ocafile-examples
+- Release 2.0.0-rc.2 version
+- Update readme about e2e
+- Add developer instruction and pre hook for updating semantic overlayfile
+- Update git action for build
 ## [2.0.0-rc.1] - 2025-12-02
 
 ### 🚀 Features
