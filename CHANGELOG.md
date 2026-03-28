@@ -1,4 +1,4 @@
-## [2.0.0] - 2026-03-28
+## [2.0.1] - 2026-03-28
 
 ### 🚀 Features
 
@@ -20,6 +20,7 @@
 - Update readme about e2e
 - Add developer instruction and pre hook for updating semantic overlayfile
 - Update git action for build
+- Release 2.0.0 version
 ## [2.0.0-rc.1] - 2025-12-02
 
 ### 🚀 Features
